@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" width="500" height="150">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Pacifico&amp;display=swap');
+      .hippo { 
+        fill: #145c6b; /* 원본의 청록색과 유사한 색상 */
+        font-family: 'Pacifico', cursive; 
+        font-size: 75px; 
+      }
+      .docs { 
+        fill: #3f4142; /* 원본의 짙은 회색과 유사한 색상 */
+        font-family: 'Pacifico', cursive; 
+        font-size: 75px; 
+      }
+    </style>
+  </defs>
+  <text x="50" y="100">
+    <tspan class="hippo">hippo</tspan><tspan class="docs">docs</tspan>
+  </text>
+</svg>
