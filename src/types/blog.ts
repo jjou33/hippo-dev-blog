@@ -23,7 +23,10 @@ export interface BlogPost {
   title: string;
   description: string;
   content: string;
+  section: string;
+  sectionIcon?: string;
   category: string;
+  categoryIcon?: string;
   date: string;
   author?: string;
 }
