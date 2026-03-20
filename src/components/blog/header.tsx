@@ -169,6 +169,7 @@ export function Header({ posts = [] }: HeaderProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // 검색어로 포스트 필터링
   const filteredPosts = searchQuery.trim()
@@ -181,6 +182,19 @@ export function Header({ posts = [] }: HeaderProps) {
   useEffect(() => {
     setSelectedIndex(-1);
   }, [searchQuery]);
+
+  // cmd+k / ctrl+k 로 검색 포커스
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setIsSearchOpen(true);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // 검색창 외부 클릭 시 닫기
   useEffect(() => {
@@ -310,6 +324,7 @@ export function Header({ posts = [] }: HeaderProps) {
             <div className="relative hidden lg:block" ref={searchRef}>
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
               <Input
+                ref={searchInputRef}
                 type="search"
                 placeholder="문서 검색..."
                 className="h-9 w-64 bg-muted/50 pl-9 text-sm"

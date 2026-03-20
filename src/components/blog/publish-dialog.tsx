@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Pencil } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { ICON_MAP, ICON_COLOR_MAP } from "@/components/blog/icon-picker";
 import type { DraftPost } from "@/app/admin/write/page";
 
@@ -58,6 +58,27 @@ export function PublishDialog({
     } else {
       setCheckedIds(new Set(drafts.map((d) => d.id)));
     }
+  };
+
+  const handleDelete = (id: string) => {
+    const raw = localStorage.getItem("blog_drafts");
+    const allDrafts: DraftPost[] = raw ? JSON.parse(raw) : [];
+    const remaining = allDrafts.filter((d) => d.id !== id);
+
+    if (remaining.length === 0) {
+      localStorage.removeItem("blog_drafts");
+    } else {
+      localStorage.setItem("blog_drafts", JSON.stringify(remaining));
+    }
+
+    // 체크 상태에서도 제거
+    setCheckedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+
+    window.dispatchEvent(new Event("drafts-updated"));
   };
 
   const handleEdit = (draft: DraftPost) => {
@@ -179,6 +200,16 @@ export function PublishDialog({
                   title="수정하기"
                 >
                   <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                {/* 삭제 버튼 */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleDelete(draft.id)}
+                  title="삭제하기"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
             );

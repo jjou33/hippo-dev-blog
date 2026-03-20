@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -45,13 +46,17 @@ interface SidebarProps {
 function NavItemComponent({
   item,
   level = 0,
+  currentPath,
 }: {
   item: NavItem;
   level?: number;
+  currentPath: string;
 }) {
+  const isActive = item.href ? item.href === currentPath : false;
   const [isOpen, setIsOpen] = useState(
-    item.items?.some((i) => i.isActive || i.items?.some((s) => s.isActive)) ??
-      false,
+    item.items?.some(
+      (i) => i.href === currentPath || i.items?.some((s) => s.href === currentPath),
+    ) ?? false,
   );
   const hasChildren = item.items && item.items.length > 0;
   const Icon =
@@ -69,7 +74,7 @@ function NavItemComponent({
             level === 0
               ? "text-foreground hover:text-foreground"
               : "text-muted-foreground hover:text-foreground",
-            item.isActive && "text-primary font-medium",
+            isActive && "text-primary font-medium",
           )}
           style={{ paddingLeft: `${level * 12}px` }}
         >
@@ -95,7 +100,7 @@ function NavItemComponent({
             level === 0
               ? "text-foreground hover:text-foreground"
               : "text-muted-foreground hover:text-foreground",
-            item.isActive && "text-emerald-600 font-medium",
+            isActive && "text-emerald-600 font-medium",
           )}
           style={{ paddingLeft: `${level * 12}px` }}
         >
@@ -123,6 +128,7 @@ function NavItemComponent({
                   key={child.title}
                   item={child}
                   level={level + 1}
+                  currentPath={currentPath}
                 />
               ))}
             </div>
@@ -135,8 +141,10 @@ function NavItemComponent({
 
 export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const pathname = usePathname();
 
   return (
+    <TooltipProvider delayDuration={200}>
     <aside
       className={cn(
         "sticky top-14 hidden h-[calc(100vh-3.5rem)] shrink-0 border-r border-border lg:block transition-all duration-300",
@@ -203,6 +211,35 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
                 className="object-contain ml-9"
               />
 
+              {/* 소셜 링크 */}
+              <div className="flex items-center justify-center gap-5">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a
+                      href="https://github.com/jjou33"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-all duration-200 hover:scale-125 hover:drop-shadow-md"
+                    >
+                      <Image src="/icons/github.svg" alt="GitHub" width={28} height={28} />
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">GitHub</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a
+                      href="mailto:zanda33@naver.com"
+                      className="transition-all duration-200 hover:scale-125 hover:drop-shadow-md"
+                    >
+                      <Image src="/icons/email.svg" alt="Email" width={28} height={28} />
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">zanda33@naver.com</TooltipContent>
+                </Tooltip>
+              </div>
+
               {/* 방문자 통계 */}
               {visitorStats && (
                 <div className="flex w-full items-center justify-center gap-3 rounded-lg bg-muted/50 px-3 py-2">
@@ -239,20 +276,22 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
               return (
                 <div key={section.title}>
                   <h4 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {sectionCustomSrc ? (
-                      <img
-                        src={sectionCustomSrc}
-                        alt=""
-                        className="h-3.5 w-3.5"
-                      />
-                    ) : (
-                      SectionIcon && <SectionIcon className="h-3.5 w-3.5" />
-                    )}
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted ring-1 ring-border shrink-0">
+                      {sectionCustomSrc ? (
+                        <img
+                          src={sectionCustomSrc}
+                          alt=""
+                          className="h-3.5 w-3.5"
+                        />
+                      ) : (
+                        SectionIcon && <SectionIcon className="h-3 w-3" />
+                      )}
+                    </span>
                     {section.title}
                   </h4>
                   <div className="space-y-0.5 ml-3">
                     {section.items.map((item) => (
-                      <NavItemComponent key={item.title} item={item} />
+                      <NavItemComponent key={item.title} item={item} currentPath={pathname} />
                     ))}
                   </div>
                 </div>
@@ -264,7 +303,6 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
 
       {/* 접힌 독(Dock) 메뉴 */}
       {isCollapsed && (
-        <TooltipProvider delayDuration={200}>
           <div className="flex flex-col items-center gap-2 py-4 pt-12">
             {sections.map((section) => {
               const SectionIcon =
@@ -305,8 +343,8 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
               );
             })}
           </div>
-        </TooltipProvider>
       )}
     </aside>
+    </TooltipProvider>
   );
 }

@@ -58,3 +58,23 @@ export function HeroSection() {
     </section>
   );
 }
+
+interface PostHeroSectionProps {
+  src: string;
+  alt?: string;
+}
+
+export function PostHeroSection({ src, alt = "포스트 히어로 이미지" }: PostHeroSectionProps) {
+  return (
+    <div className="relative h-[50vh] w-full overflow-hidden md:h-[55vh] lg:h-[60vh]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        className="h-full w-full object-cover object-center"
+      />
+      {/* 하단 그라디언트 - 콘텐츠로 자연스럽게 이어지도록 */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-background" />
+    </div>
+  );
+}

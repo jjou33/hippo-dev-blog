@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -12,7 +13,16 @@ interface MobileSidebarProps {
   sections: NavSection[];
 }
 
-function MobileNavItem({ item, level = 0 }: { item: NavItem; level?: number }) {
+function MobileNavItem({
+  item,
+  level = 0,
+  currentPath,
+}: {
+  item: NavItem;
+  level?: number;
+  currentPath: string;
+}) {
+  const isActive = item.href ? item.href === currentPath : false;
   const [isOpen, setIsOpen] = useState(false);
   const hasChildren = item.items && item.items.length > 0;
 
@@ -24,7 +34,7 @@ function MobileNavItem({ item, level = 0 }: { item: NavItem; level?: number }) {
             onClick={() => setIsOpen(!isOpen)}
             className={cn(
               "flex w-full items-center justify-between py-2 text-sm",
-              item.isActive ? "text-emerald-600 font-medium" : "text-foreground"
+              isActive ? "text-emerald-600 font-medium" : "text-foreground"
             )}
             style={{ paddingLeft: `${level * 12}px` }}
           >
@@ -33,7 +43,7 @@ function MobileNavItem({ item, level = 0 }: { item: NavItem; level?: number }) {
           {isOpen && (
             <div>
               {item.items!.map((child) => (
-                <MobileNavItem key={child.title} item={child} level={level + 1} />
+                <MobileNavItem key={child.title} item={child} level={level + 1} currentPath={currentPath} />
               ))}
             </div>
           )}
@@ -43,7 +53,7 @@ function MobileNavItem({ item, level = 0 }: { item: NavItem; level?: number }) {
           href={item.href || "#"}
           className={cn(
             "block py-2 text-sm",
-            item.isActive
+            isActive
               ? "text-emerald-600 font-medium"
               : "text-muted-foreground hover:text-foreground"
           )}
@@ -58,6 +68,7 @@ function MobileNavItem({ item, level = 0 }: { item: NavItem; level?: number }) {
 
 export function MobileSidebar({ sections }: MobileSidebarProps) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -81,7 +92,7 @@ export function MobileSidebar({ sections }: MobileSidebarProps) {
               </h4>
               <div className="space-y-0.5">
                 {section.items.map((item) => (
-                  <MobileNavItem key={item.title} item={item} />
+                  <MobileNavItem key={item.title} item={item} currentPath={pathname} />
                 ))}
               </div>
             </div>

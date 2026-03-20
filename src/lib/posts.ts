@@ -27,6 +27,7 @@ export function getAllPosts(): BlogPost[] {
         categoryIcon: data.categoryIcon,
         date: data.date ?? "",
         author: data.author ?? "",
+        heroImage: data.heroImage,
         content,
       } satisfies BlogPost;
     })
@@ -50,6 +51,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     categoryIcon: data.categoryIcon,
     date: data.date ?? "",
     author: data.author ?? "",
+    heroImage: data.heroImage,
     content,
   };
 }

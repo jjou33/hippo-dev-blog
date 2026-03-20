@@ -20,6 +20,9 @@ type DraftPost = {
   date: string;
   author: string;
   savedAt: string;
+  heroImageBase64?: string;
+  heroImageExt?: string;
+  heroImage?: string; // 기존 이미지 경로 유지용
 };
 
 export async function POST(request: Request) {
@@ -53,9 +56,38 @@ export async function POST(request: Request) {
         content,
         date,
         author,
+        heroImageBase64,
+        heroImageExt,
       } = draft;
 
       if (!title || !slug || !content) continue;
+
+      // 히어로 이미지가 있으면 GitHub에 먼저 커밋
+      let heroImagePath: string | undefined = draft.heroImage; // 기존 경로 기본값
+      if (heroImageBase64 && heroImageExt) {
+        // data URL에서 순수 base64 추출
+        const base64Data = heroImageBase64.replace(/^data:image\/[^;]+;base64,/, "");
+        const imagePath = `public/post-images/${slug}.${heroImageExt}`;
+
+        let imageSha: string | undefined;
+        try {
+          const { data } = await octokit.repos.getContent({ owner, repo, path: imagePath });
+          if (!Array.isArray(data) && data.type === "file") imageSha = data.sha;
+        } catch {
+          // 파일이 없으면 새로 생성
+        }
+
+        await octokit.repos.createOrUpdateFileContents({
+          owner,
+          repo,
+          path: imagePath,
+          message: `asset: add hero image for ${slug}`,
+          content: base64Data,
+          sha: imageSha,
+        });
+
+        heroImagePath = `/post-images/${slug}.${heroImageExt}`;
+      }
 
       const fileContent = matter.stringify(content, {
         title,
@@ -66,6 +98,7 @@ export async function POST(request: Request) {
         ...(categoryIcon ? { categoryIcon } : {}),
         date: date ?? new Date().toISOString().split("T")[0],
         author: author ?? "admin",
+        ...(heroImagePath ? { heroImage: heroImagePath } : {}),
       });
 
       const filePath = `content/posts/${slug}.md`;

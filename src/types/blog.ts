@@ -29,4 +29,5 @@ export interface BlogPost {
   categoryIcon?: string;
   date: string;
   author?: string;
+  heroImage?: string; // public 경로 e.g. /post-images/slug.jpg
 }

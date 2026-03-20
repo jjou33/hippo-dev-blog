@@ -82,6 +82,7 @@ export const sampleBlogPost: BlogPost = {
   title: "관계 설정",
   description:
     "데이터베이스에서 테이블 간의 관계를 효과적으로 설정하는 방법을 알아봅니다.",
+  section: "핵심 개념",
   category: "데이터 모델링",
   date: "2024-03-12",
   author: "개발팀",
