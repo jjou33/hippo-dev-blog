@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 export function HeroSection() {
   const imgRef = useRef<HTMLImageElement>(null);
-
+  
   useEffect(() => {
     const handleScroll = () => {
       if (imgRef.current) {
@@ -27,6 +27,7 @@ export function HeroSection() {
         alt="Hero background"
         className="absolute inset-x-0 -top-[10%] h-[120%] w-full object-cover object-center will-change-transform"
       />
+
 
       {/* Dimmed 오버레이 */}
       <div className="absolute inset-0 bg-black/55" />
@@ -74,7 +75,7 @@ export function PostHeroSection({ src, alt = "포스트 히어로 이미지" }: 
         className="h-full w-full object-cover object-center"
       />
       {/* 하단 그라디언트 - 콘텐츠로 자연스럽게 이어지도록 */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-background" />
+      <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-background opacity-50" />
     </div>
   );
 }

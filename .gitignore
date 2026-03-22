@@ -5,3 +5,6 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+.pnpm-store
+.pnpm-workspace-state.json
+.pnpm-lock.yaml
