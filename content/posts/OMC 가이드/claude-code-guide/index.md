@@ -11,10 +11,12 @@ subcategory: OMC 가이드
 subcategoryIcon: Map
 date: '2026-03-22'
 author: 조현우
-heroImage: /post-images/claude-omc.png
+heroImage: ./thumbnail.png
 ---
-![image](https://raw.githubusercontent.com/jjou33/hippo-dev-blog/main/public/post-images/paste-1774241697023-bfh3j.png)
+![image](https://raw.githubusercontent.com/jjou33/hippo-dev-blog/main/content/posts/OMC%20%EA%B0%80%EC%9D%B4%EB%93%9C/claude-code-guide/paste-1774241697023-bfh3j.png)
 
+
+![image](https://github.com/user-attachments/assets/16437be9-c6bd-490c-95c6-d54b651695d1)
 
 ## Oh My Claude Code(OMC)란?
 

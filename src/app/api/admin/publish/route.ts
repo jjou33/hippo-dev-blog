@@ -27,6 +27,12 @@ type DraftPost = {
   heroImage?: string; // 기존 이미지 경로 유지용
 };
 
+// raw.githubusercontent.com URL 생성 헬퍼
+function rawUrl(filePath: string): string {
+  const encoded = filePath.split("/").map(encodeURIComponent).join("/");
+  return `https://raw.githubusercontent.com/${owner}/${repo}/main/${encoded}`;
+}
+
 export async function POST(request: Request) {
   const session = await auth();
 
@@ -66,12 +72,16 @@ export async function POST(request: Request) {
 
       if (!title || !slug || !content) continue;
 
-      // 히어로 이미지가 있으면 GitHub에 먼저 커밋
-      let heroImagePath: string | undefined = draft.heroImage; // 기존 경로 기본값
+      // 서브카테고리 폴더명 (없으면 "general")
+      const subcatFolder = subcategory?.trim() || "general";
+      // 포스트 기본 경로: content/posts/{subcategory}/{slug}/
+      const postDir = `content/posts/${subcatFolder}/${slug}`;
+
+      // 히어로 이미지 처리
+      let heroImagePath: string | undefined = draft.heroImage;
       if (heroImageBase64 && heroImageExt) {
-        // data URL에서 순수 base64 추출
         const base64Data = heroImageBase64.replace(/^data:image\/[^;]+;base64,/, "");
-        const imagePath = `public/post-images/${slug}.${heroImageExt}`;
+        const imagePath = `${postDir}/thumbnail.${heroImageExt}`;
 
         let imageSha: string | undefined;
         try {
@@ -90,7 +100,8 @@ export async function POST(request: Request) {
           sha: imageSha,
         });
 
-        heroImagePath = `/post-images/${slug}.${heroImageExt}`;
+        // raw GitHub URL로 저장 (배포 없이 즉시 접근 가능)
+        heroImagePath = rawUrl(imagePath);
       }
 
       const fileContent = matter.stringify(content, {
@@ -107,26 +118,18 @@ export async function POST(request: Request) {
         ...(heroImagePath ? { heroImage: heroImagePath } : {}),
       });
 
-      const filePath = `content/posts/${slug}.md`;
+      const filePath = `${postDir}/index.md`;
       const encoded = Buffer.from(fileContent).toString("base64");
 
       let sha: string | undefined;
       try {
-        const { data } = await octokit.repos.getContent({
-          owner,
-          repo,
-          path: filePath,
-        });
-        if (!Array.isArray(data) && data.type === "file") {
-          sha = data.sha;
-        }
+        const { data } = await octokit.repos.getContent({ owner, repo, path: filePath });
+        if (!Array.isArray(data) && data.type === "file") sha = data.sha;
       } catch {
         // 파일이 없으면 새로 생성
       }
 
-      const commitMessage = sha
-        ? `post: update ${slug}`
-        : `post: add ${slug}`;
+      const commitMessage = sha ? `post: update ${slug}` : `post: add ${slug}`;
 
       await octokit.repos.createOrUpdateFileContents({
         owner,

@@ -9,7 +9,7 @@ subcategory: 기초
 subcategoryIcon: Layers
 date: "2026-03-20"
 author: 조현우
-heroImage: /post-images/22.png
+heroImage: ./thumbnail.png
 ---
 
 # 새 포스트

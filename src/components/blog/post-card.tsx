@@ -26,13 +26,15 @@ export function PostCard({ post }: PostCardProps) {
       {/* 썸네일 영역 */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
         {post.heroImage ? (
-          <Image
-            src={post.heroImage}
-            alt={post.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
+          <div className="absolute inset-2 overflow-hidden rounded-lg">
+            <Image
+              src={post.heroImage}
+              alt={post.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
         ) : (
           // 히어로 이미지가 없을 경우 플레이스홀더
           <div className="flex h-full items-center justify-center text-4xl text-muted-foreground/30">

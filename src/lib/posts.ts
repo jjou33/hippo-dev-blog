@@ -5,45 +5,24 @@ import type { BlogPost, NavSection, NavItem } from "@/types/blog";
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
 
-export function getAllPosts(): BlogPost[] {
-  if (!fs.existsSync(postsDirectory)) return [];
-
-  const files = fs.readdirSync(postsDirectory);
-  return files
-    .filter((file) => file.endsWith(".md"))
-    .map((file) => {
-      const slug = file.replace(/\.md$/, "");
-      const filePath = path.join(postsDirectory, file);
-      const fileContents = fs.readFileSync(filePath, "utf8");
-      const { data, content } = matter(fileContents);
-
-      return {
-        slug,
-        title: data.title ?? "",
-        description: data.description ?? "",
-        section: data.section ?? "기타",
-        sectionIcon: data.sectionIcon,
-        category: data.category ?? "기타",
-        categoryIcon: data.categoryIcon,
-        subcategory: data.subcategory ?? "일반",
-        subcategoryIcon: data.subcategoryIcon,
-        date: data.date ?? "",
-        author: data.author ?? "",
-        heroImage: data.heroImage,
-        featured: data.featured ?? false,
-        content,
-      } satisfies BlogPost;
-    })
-    .sort((a, b) => (a.date > b.date ? -1 : 1));
+// 상대 경로 heroImage를 /api/content-image?path=... 형태로 변환
+function resolveHeroImage(heroImage: string | undefined, filePath: string): string | undefined {
+  if (!heroImage) return undefined;
+  // 이미 절대 URL이면 그대로 반환
+  if (heroImage.startsWith("http://") || heroImage.startsWith("https://") || heroImage.startsWith("/")) {
+    return heroImage;
+  }
+  // 상대 경로: 파일 디렉토리 기준으로 절대 경로 계산 후 API 경로로 변환
+  const dir = path.dirname(filePath);
+  const absolutePath = path.resolve(dir, heroImage);
+  const relativePath = path.relative(postsDirectory, absolutePath);
+  return `/api/content-image?path=${encodeURIComponent(relativePath)}`;
 }
 
-export function getPostBySlug(slug: string): BlogPost | null {
-  const filePath = path.join(postsDirectory, `${slug}.md`);
-  if (!fs.existsSync(filePath)) return null;
-
+// frontmatter + content → BlogPost 변환 헬퍼
+function parsePostFile(filePath: string, slug: string): BlogPost {
   const fileContents = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(fileContents);
-
   return {
     slug,
     title: data.title ?? "",
@@ -56,10 +35,61 @@ export function getPostBySlug(slug: string): BlogPost | null {
     subcategoryIcon: data.subcategoryIcon,
     date: data.date ?? "",
     author: data.author ?? "",
-    heroImage: data.heroImage,
+    heroImage: resolveHeroImage(data.heroImage, filePath),
     featured: data.featured ?? false,
     content,
-  };
+  } satisfies BlogPost;
+}
+
+export function getAllPosts(): BlogPost[] {
+  if (!fs.existsSync(postsDirectory)) return [];
+
+  const results: BlogPost[] = [];
+  const entries = fs.readdirSync(postsDirectory, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (entry.isFile() && entry.name.endsWith(".md")) {
+      // 이전 플랫 구조: content/posts/{slug}.md
+      const slug = entry.name.replace(/\.md$/, "");
+      results.push(parsePostFile(path.join(postsDirectory, entry.name), slug));
+    } else if (entry.isDirectory()) {
+      // 새 중첩 구조: content/posts/{subcategory}/{slug}/index.md
+      const subcatDir = path.join(postsDirectory, entry.name);
+      const slugEntries = fs.readdirSync(subcatDir, { withFileTypes: true });
+      for (const slugEntry of slugEntries) {
+        if (slugEntry.isDirectory()) {
+          const indexPath = path.join(subcatDir, slugEntry.name, "index.md");
+          if (fs.existsSync(indexPath)) {
+            results.push(parsePostFile(indexPath, slugEntry.name));
+          }
+        }
+      }
+    }
+  }
+
+  return results.sort((a, b) => (a.date > b.date ? -1 : 1));
+}
+
+export function getPostBySlug(slug: string): BlogPost | null {
+  // 이전 플랫 구조 확인
+  const flatPath = path.join(postsDirectory, `${slug}.md`);
+  if (fs.existsSync(flatPath)) {
+    return parsePostFile(flatPath, slug);
+  }
+
+  // 새 중첩 구조: content/posts/{subcategory}/{slug}/index.md 탐색
+  if (!fs.existsSync(postsDirectory)) return null;
+  const entries = fs.readdirSync(postsDirectory, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const indexPath = path.join(postsDirectory, entry.name, slug, "index.md");
+      if (fs.existsSync(indexPath)) {
+        return parsePostFile(indexPath, slug);
+      }
+    }
+  }
+
+  return null;
 }
 
 // section > category > subcategory > posts 4단계 계층 구조로 네비게이션 데이터 생성
