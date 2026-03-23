@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Header } from "@/components/blog/header";
 import { IconPicker } from "@/components/blog/icon-picker";
 import { CategorySelectInput } from "@/components/admin/category-select-input";
+import { TagInput } from "@/components/admin/tag-input";
 import { ArrowLeft, Send, Loader2, ImagePlus, X } from "lucide-react";
 import Link from "next/link";
 import type { BlogPost } from "@/types/blog";
@@ -34,6 +35,7 @@ export function EditPageContent({ post }: EditPageContentProps) {
   const [categoryIcon, setCategoryIcon] = useState(post.categoryIcon ?? "");
   const [subcategory, setSubcategory] = useState(post.subcategory ?? "");
   const [subcategoryIcon, setSubcategoryIcon] = useState(post.subcategoryIcon ?? "");
+  const [tags, setTags] = useState<string[]>(post.tags ?? []);
   const [content, setContent] = useState(post.content);
   const [heroImageBase64, setHeroImageBase64] = useState("");
   const [heroImageExt, setHeroImageExt] = useState("");
@@ -408,6 +410,10 @@ export function EditPageContent({ post }: EditPageContentProps) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <label className="text-sm font-medium">태그</label>
+            <TagInput value={tags} onChange={setTags} />
           </div>
         </div>
 

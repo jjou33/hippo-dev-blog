@@ -34,4 +34,5 @@ export interface BlogPost {
   author?: string;
   heroImage?: string; // public 경로 e.g. /post-images/slug.jpg
   featured?: boolean; // 추천 포스트 여부
+  tags?: string[]; // 포스트 태그 목록
 }

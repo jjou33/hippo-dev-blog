@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Header } from "@/components/blog/header";
 import { IconPicker } from "@/components/blog/icon-picker";
 import { CategorySelectInput } from "@/components/admin/category-select-input";
+import { TagInput } from "@/components/admin/tag-input";
 import { ArrowLeft, Save, Loader2, ImagePlus, X } from "lucide-react";
 import Link from "next/link";
 
@@ -27,6 +28,7 @@ export type DraftPost = {
   categoryIcon: string;
   subcategory: string;
   subcategoryIcon: string;
+  tags: string[];
   content: string;
   date: string;
   author: string;
@@ -58,6 +60,7 @@ export default function AdminWritePage() {
   const [categoryIcon, setCategoryIcon] = useState("");
   const [subcategory, setSubcategory] = useState("");
   const [subcategoryIcon, setSubcategoryIcon] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [content, setContent] = useState("# 새 포스트\n\n내용을 작성하세요...");
   const [heroImageBase64, setHeroImageBase64] = useState("");
   const [heroImageExt, setHeroImageExt] = useState("");
@@ -105,6 +108,7 @@ export default function AdminWritePage() {
     setCategoryIcon(draft.categoryIcon);
     setSubcategory(draft.subcategory ?? "");
     setSubcategoryIcon(draft.subcategoryIcon ?? "");
+    setTags(Array.isArray(draft.tags) ? draft.tags : []);
     setContent(draft.content);
     if (draft.heroImageBase64) setHeroImageBase64(draft.heroImageBase64);
     if (draft.heroImageExt) setHeroImageExt(draft.heroImageExt);
@@ -325,6 +329,7 @@ export default function AdminWritePage() {
       categoryIcon,
       subcategory,
       subcategoryIcon,
+      tags,
       content,
       date: new Date().toISOString().split("T")[0],
       author: session.user.name ?? "admin",
@@ -440,6 +445,10 @@ export default function AdminWritePage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <label className="text-sm font-medium">태그</label>
+            <TagInput value={tags} onChange={setTags} />
           </div>
         </div>
 

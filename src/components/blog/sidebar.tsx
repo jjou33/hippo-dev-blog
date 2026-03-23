@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import type { NavSection, NavItem } from "@/types/blog";
 import {
   ICON_MAP as iconMap,
+  ICON_COLOR_MAP as iconColorMap,
   isCustomIcon,
   customIconSrc,
 } from "@/components/blog/icon-picker";
@@ -115,7 +116,7 @@ function NavItemComponent({
             {customSrc ? (
               <img src={customSrc} alt="" className="h-4 w-4 shrink-0" />
             ) : (
-              Icon && <Icon className="h-4 w-4 shrink-0" />
+              Icon && <Icon className={cn("h-4 w-4 shrink-0", item.icon ? iconColorMap[item.icon] : "")} />
             )}
             {item.title}
           </span>
@@ -141,7 +142,7 @@ function NavItemComponent({
             {customSrc ? (
               <img src={customSrc} alt="" className="h-4 w-4 shrink-0" />
             ) : (
-              Icon && <Icon className="h-4 w-4 shrink-0" />
+              Icon && <Icon className={cn("h-4 w-4 shrink-0", item.icon ? iconColorMap[item.icon] : "")} />
             )}
             <span className="truncate">{item.title}</span>
           </span>
@@ -319,7 +320,7 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
                           className="h-3.5 w-3.5"
                         />
                       ) : (
-                        SectionIcon && <SectionIcon className="h-3 w-3" />
+                        SectionIcon && <SectionIcon className={cn("h-3 w-3", section.icon ? iconColorMap[section.icon] : "")} />
                       )}
                     </span>
                     {section.title}
@@ -363,7 +364,7 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
                           className="h-5 w-5"
                         />
                       ) : SectionIcon ? (
-                        <SectionIcon className="h-5 w-5 text-muted-foreground transition-colors hover:text-foreground" />
+                        <SectionIcon className={cn("h-5 w-5 transition-colors", section.icon ? iconColorMap[section.icon] : "text-muted-foreground")} />
                       ) : (
                         <span className="text-xs font-bold text-muted-foreground">
                           {section.title[0]}

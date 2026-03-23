@@ -1,27 +1,13 @@
+export const dynamic = "force-dynamic";
+
 import { notFound } from "next/navigation";
-import { getAllPosts, getPostsBySubcategory } from "@/lib/posts";
+import { getPostsBySubcategory, getSubcategoryCoverImage } from "@/lib/posts";
 import { PostCard } from "@/components/blog/post-card";
-import { TableOfContents } from "@/components/blog/table-of-contents";
+import { SubcategoryCoverSection } from "@/components/blog/subcategory-cover-section";
+import { SubcategoryUploadButton } from "@/components/blog/subcategory-upload-button";
 
 interface SubcategoryPageProps {
   params: Promise<{ segments: string[] }>;
-}
-
-// SSG: 모든 subcategory 조합에 대해 정적 페이지 생성
-export async function generateStaticParams() {
-  const posts = getAllPosts();
-  const seen = new Set<string>();
-  const params: { segments: string[] }[] = [];
-
-  for (const post of posts) {
-    const key = `${post.section}||${post.category}||${post.subcategory}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      params.push({ segments: [post.section, post.category, post.subcategory] });
-    }
-  }
-
-  return params;
 }
 
 export async function generateMetadata({ params }: SubcategoryPageProps) {
@@ -44,9 +30,14 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
     notFound();
   }
 
+  const coverImage = getSubcategoryCoverImage(subcategory);
+
   return (
     <div className="flex flex-1 min-w-0">
       <main className="flex-1 min-w-0 px-6 py-8 lg:px-10">
+        {/* 커버 이미지 (이미지 있을 때만 표시) */}
+        <SubcategoryCoverSection subcategory={subcategory} coverImage={coverImage} />
+
         {/* 헤더 영역 */}
         <div className="mb-8">
           {/* breadcrumb */}
@@ -61,9 +52,10 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
           <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             {subcategory}
           </h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            {posts.length}개의 포스트
-          </p>
+          <div className="mt-1.5 flex items-center gap-2">
+            <p className="text-sm text-muted-foreground">{posts.length}개의 포스트</p>
+            <SubcategoryUploadButton subcategory={subcategory} hasCoverImage={!!coverImage} />
+          </div>
         </div>
 
         {/* 포스트 카드 그리드 */}

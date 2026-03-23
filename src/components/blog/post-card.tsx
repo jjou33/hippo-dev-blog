@@ -2,6 +2,21 @@ import Link from "next/link";
 import Image from "next/image";
 import type { BlogPost } from "@/types/blog";
 
+const TAG_COLORS = [
+  "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+  "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
+];
+
+function tagColor(tag: string) {
+  let hash = 0;
+  for (let i = 0; i < tag.length; i++) hash = (hash * 31 + tag.charCodeAt(i)) >>> 0;
+  return TAG_COLORS[hash % TAG_COLORS.length];
+}
+
 interface PostCardProps {
   post: BlogPost;
 }
@@ -45,6 +60,20 @@ export function PostCard({ post }: PostCardProps) {
 
       {/* 콘텐츠 영역 */}
       <div className="flex flex-1 flex-col gap-2 p-4">
+        {/* 태그 칩 */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${tagColor(tag)}`}
+              >
+                # {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* 카테고리 / subcategory 태그 */}
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span>{post.section}</span>

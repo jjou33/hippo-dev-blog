@@ -5,6 +5,51 @@ import type { BlogPost, NavSection, NavItem } from "@/types/blog";
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
 
+// tags 필드 파싱 (배열, 쉼표 구분 문자열 모두 지원)
+function parseTags(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw.map(String).filter(Boolean);
+  if (typeof raw === "string") return raw.split(",").map((t) => t.trim()).filter(Boolean);
+  return [];
+}
+
+// subcategory 폴더 이름 탐색 (폴더명이 subcategory와 다를 경우 frontmatter로 검색)
+export function findSubcategoryFolder(subcategory: string): string | null {
+  if (!fs.existsSync(postsDirectory)) return null;
+  const entries = fs.readdirSync(postsDirectory, { withFileTypes: true });
+  // 1차: 폴더명이 subcategory와 일치
+  for (const entry of entries) {
+    if (entry.isDirectory() && entry.name === subcategory) return entry.name;
+  }
+  // 2차: 폴더 내 포스트의 frontmatter subcategory로 검색
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const subcatDir = path.join(postsDirectory, entry.name);
+    const slugEntries = fs.readdirSync(subcatDir, { withFileTypes: true });
+    for (const slugEntry of slugEntries) {
+      if (!slugEntry.isDirectory()) continue;
+      const indexPath = path.join(subcatDir, slugEntry.name, "index.md");
+      if (!fs.existsSync(indexPath)) continue;
+      const { data } = matter(fs.readFileSync(indexPath, "utf8"));
+      if (data.subcategory === subcategory) return entry.name;
+    }
+  }
+  return null;
+}
+
+// subcategory 커버 이미지 경로 반환 (없으면 null)
+export function getSubcategoryCoverImage(subcategory: string): string | null {
+  const folder = findSubcategoryFolder(subcategory);
+  if (!folder) return null;
+  const exts = ["png", "jpg", "jpeg", "gif", "webp"];
+  for (const ext of exts) {
+    const coverPath = path.join(postsDirectory, folder, `cover.${ext}`);
+    if (fs.existsSync(coverPath)) {
+      return `/api/content-image?path=${encodeURIComponent(`${folder}/cover.${ext}`)}`;
+    }
+  }
+  return null;
+}
+
 // 상대 경로 heroImage를 /api/content-image?path=... 형태로 변환
 function resolveHeroImage(heroImage: string | undefined, filePath: string): string | undefined {
   if (!heroImage) return undefined;
@@ -37,6 +82,7 @@ function parsePostFile(filePath: string, slug: string): BlogPost {
     author: data.author ?? "",
     heroImage: resolveHeroImage(data.heroImage, filePath),
     featured: data.featured ?? false,
+    tags: parseTags(data.tags),
     content,
   } satisfies BlogPost;
 }

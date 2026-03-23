@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { BlogPost } from "@/types/blog";
 import { PostCard } from "@/components/blog/post-card";
+import { HorizontalPostCard } from "@/components/blog/horizontal-post-card";
 import { TerminalIntro } from "@/components/blog/terminal-intro";
 import {
   ICON_MAP,
@@ -73,8 +74,8 @@ function SectionCard({ section }: { section: SectionStat }) {
 }
 
 export function HomeContent({ posts }: HomeContentProps) {
-  // 최신 포스트 최대 3개
-  const latestPosts = posts.slice(0, 3);
+  // 최신 포스트 최대 4개 (2열 레이아웃)
+  const latestPosts = posts.slice(0, 4);
 
   // 추천 포스트
   const featuredPosts = posts.filter((p) => p.featured);
@@ -128,9 +129,9 @@ export function HomeContent({ posts }: HomeContentProps) {
             </Link>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
             {latestPosts.map((post) => (
-              <PostCard key={post.slug} post={post} />
+              <HorizontalPostCard key={post.slug} post={post} />
             ))}
           </div>
         </section>

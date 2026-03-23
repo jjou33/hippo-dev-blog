@@ -74,7 +74,7 @@ export function CategorySelectInput({
         }
       }}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
