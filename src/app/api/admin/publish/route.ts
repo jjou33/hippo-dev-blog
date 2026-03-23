@@ -16,6 +16,8 @@ type DraftPost = {
   sectionIcon: string;
   category: string;
   categoryIcon: string;
+  subcategory: string;
+  subcategoryIcon: string;
   content: string;
   date: string;
   author: string;
@@ -53,6 +55,8 @@ export async function POST(request: Request) {
         sectionIcon,
         category,
         categoryIcon,
+        subcategory,
+        subcategoryIcon,
         content,
         date,
         author,
@@ -96,6 +100,8 @@ export async function POST(request: Request) {
         ...(sectionIcon ? { sectionIcon } : {}),
         category: category ?? "",
         ...(categoryIcon ? { categoryIcon } : {}),
+        subcategory: subcategory ?? "",
+        ...(subcategoryIcon ? { subcategoryIcon } : {}),
         date: date ?? new Date().toISOString().split("T")[0],
         author: author ?? "admin",
         ...(heroImagePath ? { heroImage: heroImagePath } : {}),

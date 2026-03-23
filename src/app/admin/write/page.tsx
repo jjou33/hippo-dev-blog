@@ -22,6 +22,8 @@ export type DraftPost = {
   sectionIcon: string;
   category: string;
   categoryIcon: string;
+  subcategory: string;
+  subcategoryIcon: string;
   content: string;
   date: string;
   author: string;
@@ -42,6 +44,8 @@ export default function AdminWritePage() {
   const [sectionIcon, setSectionIcon] = useState("");
   const [category, setCategory] = useState("");
   const [categoryIcon, setCategoryIcon] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [subcategoryIcon, setSubcategoryIcon] = useState("");
   const [content, setContent] = useState("# 새 포스트\n\n내용을 작성하세요...");
   const [heroImageBase64, setHeroImageBase64] = useState("");
   const [heroImageExt, setHeroImageExt] = useState("");
@@ -69,6 +73,8 @@ export default function AdminWritePage() {
     setSectionIcon(draft.sectionIcon);
     setCategory(draft.category);
     setCategoryIcon(draft.categoryIcon);
+    setSubcategory(draft.subcategory ?? "");
+    setSubcategoryIcon(draft.subcategoryIcon ?? "");
     setContent(draft.content);
     if (draft.heroImageBase64) setHeroImageBase64(draft.heroImageBase64);
     if (draft.heroImageExt) setHeroImageExt(draft.heroImageExt);
@@ -133,6 +139,8 @@ export default function AdminWritePage() {
       sectionIcon,
       category,
       categoryIcon,
+      subcategory,
+      subcategoryIcon,
       content,
       date: new Date().toISOString().split("T")[0],
       author: session.user.name ?? "admin",
@@ -244,6 +252,22 @@ export default function AdminWritePage() {
               value={categoryIcon}
               onChange={setCategoryIcon}
               placeholder="카테고리 아이콘 선택..."
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">서브카테고리 (Subcategory)</label>
+            <Input
+              placeholder="예: OMC 가이드, SSG & 블로그 구축, 기초"
+              value={subcategory}
+              onChange={(e) => setSubcategory(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">서브카테고리 아이콘</label>
+            <IconPicker
+              value={subcategoryIcon}
+              onChange={setSubcategoryIcon}
+              placeholder="서브카테고리 아이콘 선택..."
             />
           </div>
           <div className="space-y-2 sm:col-span-2">

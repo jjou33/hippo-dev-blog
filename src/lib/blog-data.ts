@@ -2,9 +2,9 @@ import type { NavSection, TableOfContentsItem, BlogPost } from "@/types/blog";
 
 export const logo = {
   src: "/logo.png",
-  alt: "logo",
-  width: 120,
-  height: 32,
+  alt: "프로필",
+  width: 128,
+  height: 128,
   href: "/",
 };
 export const navigationData: NavSection[] = [
@@ -84,6 +84,7 @@ export const sampleBlogPost: BlogPost = {
     "데이터베이스에서 테이블 간의 관계를 효과적으로 설정하는 방법을 알아봅니다.",
   section: "핵심 개념",
   category: "데이터 모델링",
+  subcategory: "관계 설정",
   date: "2024-03-12",
   author: "개발팀",
   content: `

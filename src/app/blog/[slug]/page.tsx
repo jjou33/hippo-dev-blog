@@ -48,9 +48,11 @@ export default async function BlogPostPage({
           <div className="mb-3 flex items-center gap-2 text-base text-muted-foreground">
             {post.section && <span>{post.section}</span>}
             {post.section && post.category && <span>/</span>}
-            {post.category && (
+            {post.category && <span>{post.category}</span>}
+            {post.category && post.subcategory && <span>/</span>}
+            {post.subcategory && (
               <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                {post.category}
+                {post.subcategory}
               </span>
             )}
           </div>

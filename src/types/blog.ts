@@ -4,6 +4,7 @@ export interface NavItem {
   items?: NavItem[];
   isActive?: boolean;
   icon?: string;
+  count?: number; // subcategory에 속한 포스트 수
 }
 
 export interface NavSection {
@@ -27,7 +28,10 @@ export interface BlogPost {
   sectionIcon?: string;
   category: string;
   categoryIcon?: string;
+  subcategory: string;       // section > category > subcategory 3단계 계층
+  subcategoryIcon?: string;
   date: string;
   author?: string;
   heroImage?: string; // public 경로 e.g. /post-images/slug.jpg
+  featured?: boolean; // 추천 포스트 여부
 }

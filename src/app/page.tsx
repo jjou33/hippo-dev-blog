@@ -1,18 +1,10 @@
 import { Header } from "@/components/blog/header";
 import { Sidebar } from "@/components/blog/sidebar";
-import { Breadcrumb } from "@/components/blog/breadcrumb";
-import { BlogContent } from "@/components/blog/content";
 import { MobileSidebar } from "@/components/blog/mobile-sidebar";
 import { HeroSection } from "@/components/blog/hero-section";
+import { HomeContent } from "@/components/blog/home-content";
 import { getNavigationFromPosts, getAllPosts } from "@/lib/posts";
 import { logo } from "@/lib/blog-data";
-
-const breadcrumbItems = [
-  { label: "핵심 개념", href: "/docs" },
-  { label: "...", href: "#" },
-  { label: "데이터 모델링", href: "/docs/data-modeling" },
-  { label: "관계 설정" },
-];
 
 const visitorStats = {
   today: 100,
@@ -78,10 +70,7 @@ export default function DocsPage() {
                 </div>
               </div>
 
-              <div className="px-4 pt-8 pb-6 lg:px-8">
-                <Breadcrumb items={breadcrumbItems} />
-                <BlogContent />
-              </div>
+              <HomeContent posts={posts} />
             </div>
           </main>
 

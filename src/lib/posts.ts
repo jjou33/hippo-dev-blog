@@ -25,9 +25,12 @@ export function getAllPosts(): BlogPost[] {
         sectionIcon: data.sectionIcon,
         category: data.category ?? "기타",
         categoryIcon: data.categoryIcon,
+        subcategory: data.subcategory ?? "일반",
+        subcategoryIcon: data.subcategoryIcon,
         date: data.date ?? "",
         author: data.author ?? "",
         heroImage: data.heroImage,
+        featured: data.featured ?? false,
         content,
       } satisfies BlogPost;
     })
@@ -49,41 +52,41 @@ export function getPostBySlug(slug: string): BlogPost | null {
     sectionIcon: data.sectionIcon,
     category: data.category ?? "기타",
     categoryIcon: data.categoryIcon,
+    subcategory: data.subcategory ?? "일반",
+    subcategoryIcon: data.subcategoryIcon,
     date: data.date ?? "",
     author: data.author ?? "",
     heroImage: data.heroImage,
+    featured: data.featured ?? false,
     content,
   };
 }
 
+// section > category > subcategory > posts 4단계 계층 구조로 네비게이션 데이터 생성
 export function getNavigationFromPosts(currentSlug?: string): NavSection[] {
   const posts = getAllPosts();
 
-  // section → { icon, categories: Map<string, { icon, posts }> }
-  const sectionMap = new Map<
-    string,
-    {
-      icon?: string;
-      categories: Map<string, { icon?: string; posts: BlogPost[] }>;
-    }
-  >();
+  type SubcategoryData = { icon?: string; posts: BlogPost[] };
+  type CategoryData = { icon?: string; subcategories: Map<string, SubcategoryData> };
+  type SectionData = { icon?: string; categories: Map<string, CategoryData> };
+
+  const sectionMap = new Map<string, SectionData>();
 
   for (const post of posts) {
     if (!sectionMap.has(post.section)) {
-      sectionMap.set(post.section, {
-        icon: post.sectionIcon,
-        categories: new Map(),
-      });
+      sectionMap.set(post.section, { icon: post.sectionIcon, categories: new Map() });
     }
     const section = sectionMap.get(post.section)!;
 
     if (!section.categories.has(post.category)) {
-      section.categories.set(post.category, {
-        icon: post.categoryIcon,
-        posts: [],
-      });
+      section.categories.set(post.category, { icon: post.categoryIcon, subcategories: new Map() });
     }
-    section.categories.get(post.category)!.posts.push(post);
+    const category = section.categories.get(post.category)!;
+
+    if (!category.subcategories.has(post.subcategory)) {
+      category.subcategories.set(post.subcategory, { icon: post.subcategoryIcon, posts: [] });
+    }
+    category.subcategories.get(post.subcategory)!.posts.push(post);
   }
 
   const navSections: NavSection[] = [];
@@ -92,16 +95,25 @@ export function getNavigationFromPosts(currentSlug?: string): NavSection[] {
     const categoryItems: NavItem[] = [];
 
     for (const [categoryTitle, categoryData] of sectionData.categories) {
-      const postItems: NavItem[] = categoryData.posts.map((post) => ({
-        title: post.title,
-        href: `/blog/${post.slug}`,
-        isActive: post.slug === currentSlug,
-      }));
+      const subcategoryItems: NavItem[] = [];
+
+      for (const [subcategoryTitle, subcategoryData] of categoryData.subcategories) {
+        const href = `/blog/subcategory/${encodeURIComponent(sectionTitle)}/${encodeURIComponent(categoryTitle)}/${encodeURIComponent(subcategoryTitle)}`;
+        const isActive = subcategoryData.posts.some((p) => p.slug === currentSlug);
+
+        subcategoryItems.push({
+          title: subcategoryTitle,
+          href,
+          isActive,
+          icon: subcategoryData.icon,
+          count: subcategoryData.posts.length,
+        });
+      }
 
       categoryItems.push({
         title: categoryTitle,
         icon: categoryData.icon,
-        items: postItems,
+        items: subcategoryItems,
       });
     }
 
@@ -113,4 +125,15 @@ export function getNavigationFromPosts(currentSlug?: string): NavSection[] {
   }
 
   return navSections;
+}
+
+// subcategory 리스트 페이지용: section + category + subcategory로 포스트 필터링
+export function getPostsBySubcategory(
+  section: string,
+  category: string,
+  subcategory: string,
+): BlogPost[] {
+  return getAllPosts().filter(
+    (p) => p.section === section && p.category === category && p.subcategory === subcategory,
+  );
 }

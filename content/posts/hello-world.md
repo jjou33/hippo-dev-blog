@@ -1,12 +1,16 @@
 ---
 title: Hello World
 description: 첫 번째 블로그 포스트입니다.
+featured: true
 section: 시작하기
 sectionIcon: custom:start
 category: 소개
 categoryIcon: BookOpen
+subcategory: 시작하기
+subcategoryIcon: BookOpen
 date: "2026-03-19"
 author: hippo
+heroImage: /post-images/test.png
 ---
 
 # Hello World

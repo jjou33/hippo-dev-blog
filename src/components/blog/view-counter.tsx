@@ -12,9 +12,8 @@ export function ViewCounter({ slug }: ViewCounterProps) {
   const [views, setViews] = useState<number | null>(null);
 
   useEffect(() => {
-    // 프로덕션에서만 조회수 증가
-    const isProd = window.location.hostname === "hippo-docs.vercel.app";
-    const method = isProd ? "POST" : "GET";
+    // 개발환경에서는 조회수 증가 없이 조회만
+    const method = process.env.NODE_ENV === "production" ? "POST" : "GET";
 
     fetch(`/api/post-stats/${encodeURIComponent(slug)}`, { method })
       .then((res) => res.json())

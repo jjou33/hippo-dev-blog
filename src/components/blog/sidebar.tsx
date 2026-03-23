@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -41,6 +41,39 @@ interface SidebarProps {
     href?: string;
   };
   visitorStats?: VisitorStats;
+}
+
+const TYPING_TEXT = "HIPPO DOCS";
+
+function TypingTitle() {
+  const [displayed, setDisplayed] = useState("");
+  const [cursorVisible, setCursorVisible] = useState(true);
+
+  useEffect(() => {
+    if (displayed.length < TYPING_TEXT.length) {
+      const timer = setTimeout(
+        () => setDisplayed(TYPING_TEXT.slice(0, displayed.length + 1)),
+        110,
+      );
+      return () => clearTimeout(timer);
+    }
+  }, [displayed]);
+
+  // 타이핑 완료 후 커서 깜빡임
+  useEffect(() => {
+    const interval = setInterval(
+      () => setCursorVisible((v) => !v),
+      530,
+    );
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span className="font-mono text-sm font-bold tracking-[0.2em] text-foreground select-none">
+      {displayed}
+      <span className={cn("ml-0.5 inline-block w-[2px] h-[1.1em] align-middle bg-foreground transition-opacity", cursorVisible ? "opacity-100" : "opacity-0")} />
+    </span>
+  );
 }
 
 function NavItemComponent({
@@ -96,7 +129,7 @@ function NavItemComponent({
         <Link
           href={item.href || "#"}
           className={cn(
-            "flex items-center gap-2 py-1.5 text-sm transition-colors",
+            "flex items-center justify-between gap-2 py-1.5 text-sm transition-colors",
             level === 0
               ? "text-foreground hover:text-foreground"
               : "text-muted-foreground hover:text-foreground",
@@ -104,12 +137,20 @@ function NavItemComponent({
           )}
           style={{ paddingLeft: `${level * 12}px` }}
         >
-          {customSrc ? (
-            <img src={customSrc} alt="" className="h-4 w-4 shrink-0" />
-          ) : (
-            Icon && <Icon className="h-4 w-4 shrink-0" />
+          <span className="flex items-center gap-2 min-w-0">
+            {customSrc ? (
+              <img src={customSrc} alt="" className="h-4 w-4 shrink-0" />
+            ) : (
+              Icon && <Icon className="h-4 w-4 shrink-0" />
+            )}
+            <span className="truncate">{item.title}</span>
+          </span>
+          {/* subcategory 포스트 수 badge */}
+          {item.count !== undefined && (
+            <span className="ml-auto shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              {item.count}
+            </span>
           )}
-          {item.title}
         </Link>
       )}
 
@@ -172,10 +213,10 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
         <>
           {/* 로고 영역 */}
           {logo && (
-            <div className="flex flex-col items-center gap-3 border-b border-border px-4 py-5">
+            <div className="flex flex-col items-center gap-5 border-b border-border px-4 py-5">
               {/* 원형 심볼 로고 */}
               <div
-                className="rounded-full"
+                className="rounded-2xl"
                 style={{
                   boxShadow:
                     "0 4px 16px 0 rgba(0,0,0,0.18), 0 1.5px 4px 0 rgba(0,0,0,0.10)",
@@ -186,9 +227,9 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
                     <Image
                       src={logo.src}
                       alt={logo.alt}
-                      width={logo.width ?? 72}
-                      height={logo.height ?? 72}
-                      className="rounded-full object-cover"
+                      width={logo.width ?? 128}
+                      height={logo.height ?? 128}
+                      className="rounded-2xl object-cover"
                     />
                   </Link>
                 ) : (
@@ -197,19 +238,13 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
                     alt={logo.alt}
                     width={logo.width ?? 72}
                     height={logo.height ?? 72}
-                    className="rounded-full object-cover"
+                    className="rounded-2xl object-cover"
                   />
                 )}
               </div>
 
-              {/* 타이틀 로고 */}
-              <Image
-                src="/logo-title.svg"
-                alt="title logo"
-                width={170}
-                height={40}
-                className="object-contain ml-9"
-              />
+              {/* 타이핑 타이틀 */}
+              <TypingTitle />
 
               {/* 소셜 링크 */}
               <div className="flex items-center justify-center gap-5">
@@ -221,7 +256,7 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
                       rel="noopener noreferrer"
                       className="transition-all duration-200 hover:scale-125 hover:drop-shadow-md"
                     >
-                      <Image src="/icons/github.svg" alt="GitHub" width={28} height={28} />
+                      <Image src="/icons/github.svg" alt="GitHub" width={20} height={20} />
                     </a>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">GitHub</TooltipContent>
@@ -233,7 +268,7 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
                       href="mailto:zanda33@naver.com"
                       className="transition-all duration-200 hover:scale-125 hover:drop-shadow-md"
                     >
-                      <Image src="/icons/email.svg" alt="Email" width={28} height={28} />
+                      <Image src="/icons/email.svg" alt="Email" width={20} height={20} />
                     </a>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">zanda33@naver.com</TooltipContent>
