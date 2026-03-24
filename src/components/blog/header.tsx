@@ -155,7 +155,10 @@ interface HeaderProps {
   posts?: BlogPost[];
 }
 
-export function Header({ posts = [] }: HeaderProps) {
+// 검색용 포스트 타입 (content 제외)
+type SearchPost = Omit<BlogPost, "content" | "date" | "author" | "heroImage" | "heroImageFit" | "featured" | "tags">;
+
+export function Header({ posts: propPosts }: HeaderProps) {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
   const { resolvedTheme, setTheme } = useTheme();
@@ -166,6 +169,18 @@ export function Header({ posts = [] }: HeaderProps) {
   const [drafts, setDrafts] = useState<DraftPost[]>([]);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
 
+  // 전체 포스트 (검색용) — prop이 없으면 API에서 자동 fetch
+  const [allPosts, setAllPosts] = useState<SearchPost[]>(propPosts ?? []);
+  useEffect(() => {
+    if (propPosts && propPosts.length > 0) return; // prop으로 받은 경우 재요청 불필요
+    fetch("/api/posts")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setAllPosts(data);
+      })
+      .catch(() => {}); // 조용히 실패 — 검색 기능만 비활성화됨
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // 검색 상태
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -175,7 +190,7 @@ export function Header({ posts = [] }: HeaderProps) {
 
   // 검색어로 포스트 필터링
   const filteredPosts = searchQuery.trim()
-    ? posts.filter((p) =>
+    ? allPosts.filter((p) =>
         p.title.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : [];
@@ -209,7 +224,7 @@ export function Header({ posts = [] }: HeaderProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelectPost = (post: BlogPost) => {
+  const handleSelectPost = (post: SearchPost) => {
     router.push(`/blog/${post.slug}`);
     setSearchQuery("");
     setIsSearchOpen(false);

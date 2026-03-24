@@ -35,7 +35,7 @@ const PROFILE = {
   name: "Hippo",
   title: "Front & AI Developer",
   description: "개발 경험과 인사이트를\n기록하는 공간입니다.",
-  avatar: null as string | null,
+  avatar: "/profile.png" as string | null,
   github: "https://github.com/jjou33",
   email: "zanda33@naver.com",
 };
