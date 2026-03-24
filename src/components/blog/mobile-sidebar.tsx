@@ -140,7 +140,7 @@ export function MobileSidebar({ sections }: MobileSidebarProps) {
           <span className="sr-only">메뉴 열기</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 overflow-y-auto">
+      <SheetContent side="left" className="w-72 overflow-y-auto px-5">
         <SheetTitle className="mb-4">문서 탐색</SheetTitle>
         <nav className="space-y-6">
           {sections.map((section) => {

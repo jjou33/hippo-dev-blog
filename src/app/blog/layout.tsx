@@ -2,7 +2,6 @@ import { Header } from "@/components/blog/header";
 import { Sidebar } from "@/components/blog/sidebar";
 import { MobileSidebar } from "@/components/blog/mobile-sidebar";
 import { getAllPosts, getNavigationFromPosts } from "@/lib/posts";
-import { logo } from "@/lib/blog-data";
 import { kv } from "@vercel/kv";
 
 export default async function BlogLayout({
@@ -34,7 +33,7 @@ export default async function BlogLayout({
         <div className="flex">
           <Sidebar
             sections={navigationData}
-            logo={logo}
+            postCount={allPosts.length}
             visitorStats={visitorStats}
           />
           {children}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,7 +11,9 @@ import {
   Users,
   PanelLeftClose,
   PanelLeftOpen,
+  Mail,
 } from "lucide-react";
+import { SiGithub } from "react-icons/si";
 import { cn } from "@/lib/utils";
 import type { NavSection, NavItem } from "@/types/blog";
 import {
@@ -27,6 +29,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+// ── 프로필 설정 ──────────────────────────────────────────────────────
+
+const PROFILE = {
+  name: "Hippo",
+  title: "Front & AI Developer",
+  description: "개발 경험과 인사이트를\n기록하는 공간입니다.",
+  avatar: null as string | null,
+  github: "https://github.com/jjou33",
+  email: "zanda33@naver.com",
+};
+
 interface VisitorStats {
   today: number;
   total: number;
@@ -34,47 +47,8 @@ interface VisitorStats {
 
 interface SidebarProps {
   sections: NavSection[];
-  logo?: {
-    src: string;
-    alt: string;
-    width?: number;
-    height?: number;
-    href?: string;
-  };
+  postCount?: number;
   visitorStats?: VisitorStats;
-}
-
-const TYPING_TEXT = "HIPPO DOCS";
-
-function TypingTitle() {
-  const [displayed, setDisplayed] = useState("");
-  const [cursorVisible, setCursorVisible] = useState(true);
-
-  useEffect(() => {
-    if (displayed.length < TYPING_TEXT.length) {
-      const timer = setTimeout(
-        () => setDisplayed(TYPING_TEXT.slice(0, displayed.length + 1)),
-        110,
-      );
-      return () => clearTimeout(timer);
-    }
-  }, [displayed]);
-
-  // 타이핑 완료 후 커서 깜빡임
-  useEffect(() => {
-    const interval = setInterval(
-      () => setCursorVisible((v) => !v),
-      530,
-    );
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <span className="font-mono text-sm font-bold tracking-[0.2em] text-foreground select-none">
-      {displayed}
-      <span className={cn("ml-0.5 inline-block w-[2px] h-[1.1em] align-middle bg-foreground transition-opacity", cursorVisible ? "opacity-100" : "opacity-0")} />
-    </span>
-  );
 }
 
 function NavItemComponent({
@@ -181,9 +155,27 @@ function NavItemComponent({
   );
 }
 
-export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
+
+export function Sidebar({ sections, postCount, visitorStats }: SidebarProps) {
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true";
+  });
   const pathname = usePathname();
+
+  const toggleCollapsed = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(next));
+      return next;
+    });
+  };
+
+  const expandSidebar = () => {
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, "false");
+    setIsCollapsed(false);
+  };
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -195,7 +187,7 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
     >
       {/* 사이드바 토글 버튼 */}
       <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={toggleCollapsed}
         className={cn(
           "absolute z-10 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors",
           isCollapsed ? "right-2 top-3" : "right-2 top-3",
@@ -212,92 +204,86 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
       {/* 펼쳐진 사이드바 */}
       {!isCollapsed && (
         <>
-          {/* 로고 영역 */}
-          {logo && (
-            <div className="flex flex-col items-center gap-5 border-b border-border px-4 py-5">
-              {/* 원형 심볼 로고 */}
-              <div
-                className="rounded-2xl"
-                style={{
-                  boxShadow:
-                    "0 4px 16px 0 rgba(0,0,0,0.18), 0 1.5px 4px 0 rgba(0,0,0,0.10)",
-                }}
-              >
-                {logo.href ? (
-                  <Link href={logo.href}>
-                    <Image
-                      src={logo.src}
-                      alt={logo.alt}
-                      width={logo.width ?? 128}
-                      height={logo.height ?? 128}
-                      className="rounded-2xl object-cover"
-                    />
-                  </Link>
+          {/* 프로필 영역 */}
+          <div className="flex flex-col gap-4 border-b border-border px-4 py-5">
+            {/* 아바타 + 이름/직함 */}
+            <div className="flex items-center gap-3">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-border">
+                {PROFILE.avatar ? (
+                  <Image src={PROFILE.avatar} alt={PROFILE.name} fill className="object-cover" />
                 ) : (
-                  <Image
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={logo.width ?? 72}
-                    height={logo.height ?? 72}
-                    className="rounded-2xl object-cover"
-                  />
+                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-emerald-400 to-cyan-500 text-xl font-bold text-white select-none">
+                    {PROFILE.name[0]}
+                  </div>
                 )}
               </div>
-
-              {/* 타이핑 타이틀 */}
-              <TypingTitle />
-
-              {/* 소셜 링크 */}
-              <div className="flex items-center justify-center gap-5">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <a
-                      href="https://github.com/jjou33"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="transition-all duration-200 hover:scale-125 hover:drop-shadow-md"
-                    >
-                      <Image src="/icons/github.svg" alt="GitHub" width={20} height={20} />
-                    </a>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">GitHub</TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <a
-                      href="mailto:zanda33@naver.com"
-                      className="transition-all duration-200 hover:scale-125 hover:drop-shadow-md"
-                    >
-                      <Image src="/icons/email.svg" alt="Email" width={20} height={20} />
-                    </a>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">zanda33@naver.com</TooltipContent>
-                </Tooltip>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-foreground">{PROFILE.name}</p>
+                <p className="text-xs text-emerald-500">{PROFILE.title}</p>
               </div>
-
-              {/* 방문자 통계 */}
-              {visitorStats && (
-                <div className="flex w-full items-center justify-center gap-3 rounded-lg bg-muted/50 px-3 py-2">
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Eye className="h-3.5 w-3.5" />
-                    <span>오늘</span>
-                    <span className="font-semibold text-foreground">
-                      {visitorStats.today.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="h-3 w-px bg-border" />
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Users className="h-3.5 w-3.5" />
-                    <span>전체</span>
-                    <span className="font-semibold text-foreground">
-                      {visitorStats.total.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
             </div>
-          )}
+
+            {/* 소개글 */}
+            <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+              {PROFILE.description}
+            </p>
+
+            {/* 포스트 수 */}
+            {postCount !== undefined && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className="font-semibold text-foreground tabular-nums">{postCount}</span>
+                <span>posts</span>
+              </div>
+            )}
+
+            {/* 소셜 링크 */}
+            <div className="flex items-center gap-3">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={PROFILE.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <SiGithub className="h-4 w-4" />
+                    GitHub
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">{PROFILE.github}</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={`mailto:${PROFILE.email}`}
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">{PROFILE.email}</TooltipContent>
+              </Tooltip>
+            </div>
+
+            {/* 방문자 통계 */}
+            {visitorStats && (
+              <div className="flex w-full items-center gap-3 rounded-lg bg-muted/50 px-3 py-2">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Eye className="h-3.5 w-3.5" />
+                  <span>오늘</span>
+                  <span className="font-semibold text-foreground">{visitorStats.today.toLocaleString()}</span>
+                </div>
+                <div className="h-3 w-px bg-border" />
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Users className="h-3.5 w-3.5" />
+                  <span>전체</span>
+                  <span className="font-semibold text-foreground">{visitorStats.total.toLocaleString()}</span>
+                </div>
+              </div>
+            )}
+          </div>
 
           <nav className="space-y-6 py-6 pr-4 pl-4">
             {sections.map((section) => {
@@ -340,6 +326,25 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
       {/* 접힌 독(Dock) 메뉴 */}
       {isCollapsed && (
           <div className="flex flex-col items-center gap-2 py-4 pt-12">
+            {/* 프로필 아바타 */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={expandSidebar}
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full overflow-hidden ring-2 ring-border mb-1 transition-all duration-200 hover:scale-110 hover:ring-emerald-400"
+                >
+                  {PROFILE.avatar ? (
+                    <Image src={PROFILE.avatar} alt={PROFILE.name} width={40} height={40} className="object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-emerald-400 to-cyan-500 text-sm font-bold text-white select-none">
+                      {PROFILE.name[0]}
+                    </div>
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">{PROFILE.name} · {PROFILE.title}</TooltipContent>
+            </Tooltip>
+
             {sections.map((section) => {
               const SectionIcon =
                 section.icon && !isCustomIcon(section.icon)
@@ -354,7 +359,7 @@ export function Sidebar({ sections, logo, visitorStats }: SidebarProps) {
                 <Tooltip key={section.title}>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setIsCollapsed(false)}
+                      onClick={expandSidebar}
                       className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-muted transition-all duration-200 hover:scale-125 hover:bg-accent hover:shadow-md"
                     >
                       {sectionCustomSrc ? (

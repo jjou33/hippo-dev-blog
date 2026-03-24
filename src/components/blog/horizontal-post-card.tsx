@@ -14,7 +14,8 @@ const TAG_COLORS = [
 
 function tagColor(tag: string) {
   let hash = 0;
-  for (let i = 0; i < tag.length; i++) hash = (hash * 31 + tag.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < tag.length; i++)
+    hash = (hash * 31 + tag.charCodeAt(i)) >>> 0;
   return TAG_COLORS[hash % TAG_COLORS.length];
 }
 
@@ -29,15 +30,37 @@ export function HorizontalPostCard({ post }: HorizontalPostCardProps) {
       className="group flex overflow-hidden rounded-xl border border-border bg-card transition-all duration-200 hover:border-primary/30 hover:shadow-md"
     >
       {/* 왼쪽 이미지 영역 */}
-      <div className="relative w-28 shrink-0 overflow-hidden bg-muted sm:w-36">
+      <div className="relative w-1/4 shrink-0 overflow-hidden bg-muted">
         {post.heroImage ? (
-          <Image
-            src={post.heroImage}
-            alt={post.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 640px) 112px, 144px"
-          />
+          post.heroImageFit === "contain" ? (
+            <>
+              {/* 블러 배경 (contain 모드일 때 빈 공간을 채움) */}
+              <Image
+                src={post.heroImage}
+                alt=""
+                fill
+                aria-hidden
+                className="object-cover scale-110 blur-sm opacity-40"
+                sizes="25vw"
+              />
+              {/* 실제 이미지 - 전체 표시 */}
+              <Image
+                src={post.heroImage}
+                alt={post.title}
+                fill
+                className="object-contain transition-transform duration-300 group-hover:scale-105"
+                sizes="25vw"
+              />
+            </>
+          ) : (
+            <Image
+              src={post.heroImage}
+              alt={post.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="25vw"
+            />
+          )
         ) : (
           <div className="flex h-full items-center justify-center text-4xl text-muted-foreground/30">
             📄

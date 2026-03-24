@@ -81,6 +81,7 @@ function parsePostFile(filePath: string, slug: string): BlogPost {
     date: data.date ?? "",
     author: data.author ?? "",
     heroImage: resolveHeroImage(data.heroImage, filePath),
+    heroImageFit: data.heroImageFit === "contain" ? "contain" : "cover",
     featured: data.featured ?? false,
     tags: parseTags(data.tags),
     content,

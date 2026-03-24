@@ -15,6 +15,16 @@ export default function DocsPage() {
   const navigationData = getNavigationFromPosts();
   const posts = getAllPosts();
 
+  // 포스트 수 및 상위 태그 계산
+  const postCount = posts.length;
+  const tagCounts = posts
+    .flatMap((p) => p.tags)
+    .reduce((acc, tag) => { acc[tag] = (acc[tag] || 0) + 1; return acc; }, {} as Record<string, number>);
+  const topTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([tag]) => tag);
+
   return (
     <div className="bg-background">
       <Header posts={posts} />
@@ -30,15 +40,15 @@ export default function DocsPage() {
 
           {/* Main Content */}
           <main className="min-w-0 flex-1">
-            <HeroSection />
+            <HeroSection postCount={postCount} topTags={topTags} featuredPosts={posts.filter((p) => p.featured)} />
 
             {/* 스크롤 시 Hero 위로 덮으며 올라오는 컨텐츠 */}
             <div className="relative z-10 bg-background border-0 outline-none">
               {/* 물결 애니메이션 구분선 */}
-              <div className="absolute -top-12 left-0 w-full h-12 overflow-hidden pointer-events-none border-0 outline-none mt-1">
+              <div className="absolute -top-20 left-0 w-full h-20 overflow-hidden pointer-events-none border-0 outline-none mt-1">
                 <div className="wave-scroll flex w-[200%] h-full">
                   <svg
-                    viewBox="0 0 1440 48"
+                    viewBox="0 0 1440 80"
                     className="w-1/2 h-full shrink-0 border-0"
                     preserveAspectRatio="none"
                     style={{
@@ -48,12 +58,12 @@ export default function DocsPage() {
                     }}
                   >
                     <path
-                      d="M0,24 C240,48 480,0 720,24 C960,48 1200,0 1440,24 L1440,48 L0,48 Z"
+                      d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z"
                       stroke="none"
                     />
                   </svg>
                   <svg
-                    viewBox="0 0 1440 48"
+                    viewBox="0 0 1440 80"
                     className="w-1/2 h-full shrink-0 border-0"
                     preserveAspectRatio="none"
                     style={{
@@ -63,7 +73,7 @@ export default function DocsPage() {
                     }}
                   >
                     <path
-                      d="M0,24 C240,48 480,0 720,24 C960,48 1200,0 1440,24 L1440,48 L0,48 Z"
+                      d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z"
                       stroke="none"
                     />
                   </svg>

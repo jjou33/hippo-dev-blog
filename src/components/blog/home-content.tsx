@@ -13,6 +13,8 @@ import {
   customIconSrc,
 } from "@/components/blog/icon-picker";
 
+// ── 서브카테고리 카드 ────────────────────────────────────────────────
+
 interface SectionStat {
   title: string;
   section: string;
@@ -25,7 +27,6 @@ interface HomeContentProps {
   posts: BlogPost[];
 }
 
-/** 아이콘 이름을 받아 Lucide 또는 커스텀 SVG로 렌더링 */
 function SectionIcon({ name }: { name: string }) {
   if (isCustomIcon(name)) {
     return (
@@ -38,7 +39,6 @@ function SectionIcon({ name }: { name: string }) {
   return <Icon className={cn("h-4 w-4 shrink-0", ICON_COLOR_MAP[name])} />;
 }
 
-/** macOS 윈도우 스타일 서브카테고리 카드 (compact) */
 function SectionCard({ section }: { section: SectionStat }) {
   const href = `/blog/subcategory/${encodeURIComponent(section.section)}/${encodeURIComponent(section.category)}/${encodeURIComponent(section.title)}`;
   return (
@@ -46,14 +46,11 @@ function SectionCard({ section }: { section: SectionStat }) {
       href={href}
       className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md"
     >
-      {/* macOS 윈도우 헤더 */}
       <div className="flex items-center gap-1 border-b border-border bg-muted/60 px-2 py-1.5">
         <span className="h-2 w-2 rounded-full bg-red-400" />
         <span className="h-2 w-2 rounded-full bg-yellow-400" />
         <span className="h-2 w-2 rounded-full bg-green-400" />
       </div>
-
-      {/* 카드 본문 */}
       <div className="flex items-center justify-between px-2.5 py-2.5 gap-1.5">
         <div className="flex items-center gap-1.5 min-w-0">
           {section.icon && (
@@ -73,14 +70,12 @@ function SectionCard({ section }: { section: SectionStat }) {
   );
 }
 
-export function HomeContent({ posts }: HomeContentProps) {
-  // 최신 포스트 최대 4개 (2열 레이아웃)
-  const latestPosts = posts.slice(0, 4);
+// ── 메인 컴포넌트 ────────────────────────────────────────────────────
 
-  // 추천 포스트
+export function HomeContent({ posts }: HomeContentProps) {
+  const latestPosts = posts.slice(0, 4);
   const featuredPosts = posts.filter((p) => p.featured);
 
-  // subcategory별 포스트 수 집계 (section + category + subcategory 조합 키로 구분)
   const sectionMap = new Map<string, SectionStat>();
   for (const post of posts) {
     const key = `${post.section}||${post.category}||${post.subcategory}`;
@@ -99,7 +94,8 @@ export function HomeContent({ posts }: HomeContentProps) {
 
   return (
     <div className="space-y-16 px-4 py-12 lg:px-8">
-      {/* ── 1. 터미널 소개글 ── */}
+
+      {/* ── 1. Hero: 터미널 ── */}
       <section>
         <TerminalIntro postCount={posts.length} />
       </section>
@@ -128,7 +124,6 @@ export function HomeContent({ posts }: HomeContentProps) {
               전체 보기 →
             </Link>
           </div>
-
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
             {latestPosts.map((post) => (
               <HorizontalPostCard key={post.slug} post={post} />
@@ -141,14 +136,17 @@ export function HomeContent({ posts }: HomeContentProps) {
       {sections.length > 0 && (
         <section>
           <h2 className="mb-6 text-xl font-bold tracking-tight">서브카테고리 둘러보기</h2>
-
           <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {sections.map((section) => (
-              <SectionCard key={`${section.section}||${section.category}||${section.title}`} section={section} />
+              <SectionCard
+                key={`${section.section}||${section.category}||${section.title}`}
+                section={section}
+              />
             ))}
           </div>
         </section>
       )}
+
     </div>
   );
 }

@@ -33,6 +33,7 @@ export interface BlogPost {
   date: string;
   author?: string;
   heroImage?: string; // public 경로 e.g. /post-images/slug.jpg
+  heroImageFit?: "cover" | "contain"; // 카드 이미지 표시 방식 (기본: cover)
   featured?: boolean; // 추천 포스트 여부
   tags?: string[]; // 포스트 태그 목록
 }

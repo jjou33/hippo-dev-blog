@@ -42,13 +42,35 @@ export function PostCard({ post }: PostCardProps) {
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
         {post.heroImage ? (
           <div className="absolute inset-2 overflow-hidden rounded-lg">
-            <Image
-              src={post.heroImage}
-              alt={post.title}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
+            {post.heroImageFit === "contain" ? (
+              <>
+                {/* 블러 배경 */}
+                <Image
+                  src={post.heroImage}
+                  alt=""
+                  fill
+                  aria-hidden
+                  className="object-cover scale-110 blur-sm opacity-40"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                {/* 실제 이미지 - 전체 표시 */}
+                <Image
+                  src={post.heroImage}
+                  alt={post.title}
+                  fill
+                  className="object-contain transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </>
+            ) : (
+              <Image
+                src={post.heroImage}
+                alt={post.title}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            )}
           </div>
         ) : (
           // 히어로 이미지가 없을 경우 플레이스홀더

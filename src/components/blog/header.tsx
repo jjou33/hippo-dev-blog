@@ -159,6 +159,8 @@ export function Header({ posts = [] }: HeaderProps) {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
   const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const router = useRouter();
 
   const [drafts, setDrafts] = useState<DraftPost[]>([]);
@@ -446,31 +448,35 @@ export function Header({ posts = [] }: HeaderProps) {
             </Button>
 
             {/* 다크모드 토글 스위치 */}
-            <button
-              onClick={() =>
-                setTheme(resolvedTheme === "dark" ? "light" : "dark")
-              }
-              title="테마 전환"
-              className={`relative flex h-7 w-14 items-center rounded-full border px-1 transition-colors duration-300 ${
-                resolvedTheme === "dark"
-                  ? "border-indigo-600 bg-indigo-950"
-                  : "border-amber-300 bg-amber-50"
-              }`}
-            >
-              <span
-                className={`absolute flex h-5 w-5 items-center justify-center rounded-full shadow transition-all duration-300 ${
+            {!mounted ? (
+              <div className="h-7 w-14" />
+            ) : (
+              <button
+                onClick={() =>
+                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                }
+                title="테마 전환"
+                className={`relative flex h-7 w-14 items-center rounded-full border px-1 transition-colors duration-300 ${
                   resolvedTheme === "dark"
-                    ? "translate-x-7 bg-indigo-500"
-                    : "translate-x-0 bg-amber-400"
+                    ? "border-indigo-600 bg-indigo-950"
+                    : "border-amber-300 bg-amber-50"
                 }`}
               >
-                {resolvedTheme === "dark" ? (
-                  <MoonStar className="h-3 w-3 text-white" />
-                ) : (
-                  <Sun className="h-3 w-3 text-white" />
-                )}
-              </span>
-            </button>
+                <span
+                  className={`absolute flex h-5 w-5 items-center justify-center rounded-full shadow transition-all duration-300 ${
+                    resolvedTheme === "dark"
+                      ? "translate-x-7 bg-indigo-500"
+                      : "translate-x-0 bg-amber-400"
+                  }`}
+                >
+                  {resolvedTheme === "dark" ? (
+                    <MoonStar className="h-3 w-3 text-white" />
+                  ) : (
+                    <Sun className="h-3 w-3 text-white" />
+                  )}
+                </span>
+              </button>
+            )}
 
             <UserMenu />
           </div>
