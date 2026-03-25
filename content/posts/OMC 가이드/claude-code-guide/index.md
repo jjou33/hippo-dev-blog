@@ -3,18 +3,19 @@ title: Oh My Claude Code (OMC) 완벽 가이드
 description: >-
   Claude Code를 위한 멀티 에이전트 오케스트레이션 플러그인 Oh My Claude Code(OMC)의 설치부터 핵심 기능, 실전
   활용법까지 총정리합니다.
+featured: true
 section: AI Tools
 sectionIcon: Cpu
 category: Claude Code
 categoryIcon: Terminal
 subcategory: OMC 가이드
 subcategoryIcon: Map
-date: '2026-03-22'
+date: "2026-03-22"
 author: 조현우
 heroImage: ./thumbnail.png
 ---
-![image](https://raw.githubusercontent.com/jjou33/hippo-dev-blog/main/content/posts/OMC%20%EA%B0%80%EC%9D%B4%EB%93%9C/claude-code-guide/paste-1774241697023-bfh3j.png)
 
+![image](https://raw.githubusercontent.com/jjou33/hippo-dev-blog/main/content/posts/OMC%20%EA%B0%80%EC%9D%B4%EB%93%9C/claude-code-guide/paste-1774241697023-bfh3j.png)
 
 ![image](https://github.com/user-attachments/assets/16437be9-c6bd-490c-95c6-d54b651695d1)
 

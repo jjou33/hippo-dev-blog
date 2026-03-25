@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import type { BlogPost } from "@/types/blog";
 import { PostCard } from "@/components/blog/post-card";
 import { HorizontalPostCard } from "@/components/blog/horizontal-post-card";
 import { TerminalIntro } from "@/components/blog/terminal-intro";
 import {
   ICON_MAP,
-  ICON_COLOR_MAP,
   isCustomIcon,
   customIconSrc,
 } from "@/components/blog/icon-picker";
@@ -36,7 +34,7 @@ function SectionIcon({ name }: { name: string }) {
   }
   const Icon = ICON_MAP[name];
   if (!Icon) return null;
-  return <Icon className={cn("h-4 w-4 shrink-0", ICON_COLOR_MAP[name])} />;
+  return <Icon className="h-4 w-4 shrink-0" />;
 }
 
 function SectionCard({ section }: { section: SectionStat }) {

@@ -1,30 +1,108 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
+import type { IconType } from "react-icons";
 import {
-  Code2,
-  BookOpen,
-  Map,
-  Layers,
-  Library,
-  FileCode,
-  Zap,
-  HardDrive,
-  ShieldCheck,
-  Globe,
-  Server,
-  Database,
-  Terminal,
-  Cpu,
-  GitBranch,
-  Package,
-  Wrench,
-  LayoutDashboard,
-  Rocket,
-  Check,
-  ChevronsUpDown,
-  type LucideIcon,
-} from "lucide-react";
+  FcProcess,
+  FcDocument,
+  FcDatabase,
+  FcSettings,
+  FcFolder,
+  FcGlobe,
+  FcMindMap,
+  FcFlowChart,
+  FcEngineering,
+  FcIdea,
+  FcRules,
+  FcTemplate,
+  FcKey,
+  FcPackage,
+  FcTreeStructure,
+  FcReading,
+  FcElectronics,
+  FcBinoculars,
+  FcMultipleDevices,
+  FcDeployment,
+  FcCommandLine,
+  FcWorkflow,
+  FcPieChart,
+  FcBullish,
+  FcSurvey,
+  FcOrganization,
+  FcConferenceCall,
+  FcAutomatic,
+  FcAbout,
+  FcGoodDecision,
+  // 확장 아이콘
+  FcAcceptDatabase,
+  FcAndroidOs,
+  FcApproval,
+  FcAreaChart,
+  FcAssistant,
+  FcBarChart,
+  FcBriefcase,
+  FcBusiness,
+  FcCalendar,
+  FcCheckmark,
+  FcCollaboration,
+  FcComments,
+  FcDataBackup,
+  FcDataConfiguration,
+  FcDataEncryption,
+  FcDataProtection,
+  FcDecision,
+  FcDepartment,
+  FcDisplay,
+  FcFilm,
+  FcGallery,
+  FcGenealogy,
+  FcGraduationCap,
+  FcHeadset,
+  FcHighPriority,
+  FcHome,
+  FcInfo,
+  FcInspection,
+  FcLibrary,
+  FcLineChart,
+  FcLinux,
+  FcList,
+  FcLock,
+  FcManager,
+  FcMoneyTransfer,
+  FcNews,
+  FcOnlineSupport,
+  FcParallelTasks,
+  FcPhone,
+  FcPicture,
+  FcPlanner,
+  FcPositiveDynamic,
+  FcPrint,
+  FcPrivacy,
+  FcPuzzle,
+  FcQuestions,
+  FcSearch,
+  FcSerialTasks,
+  FcServices,
+  FcSmartphoneTablet,
+  FcStackOfPhotos,
+  FcStart,
+  FcStatistics,
+  FcTimeline,
+  FcTodoList,
+  FcUnlock,
+  FcUpload,
+  FcVideoCall,
+  FcVideoFile,
+  FcViewDetails,
+  FcCurrencyExchange,
+  FcNumericalSorting12,
+  FcDataSheet,
+  FcCircuit,
+  FcCapacitor,
+  FcElectroDevices,
+  FcWiFiLogo,
+} from "react-icons/fc";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,49 +119,112 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
-export const ICON_MAP: Record<string, LucideIcon> = {
-  Code2,
-  BookOpen,
-  Map,
-  Layers,
-  Library,
-  FileCode,
-  Zap,
-  HardDrive,
-  ShieldCheck,
-  Globe,
-  Server,
-  Database,
-  Terminal,
-  Cpu,
-  GitBranch,
-  Package,
-  Wrench,
-  LayoutDashboard,
-  Rocket,
+export const ICON_MAP: Record<string, IconType> = {
+  // 기존 키 유지 (저장된 포스트 호환)
+  Code2: FcProcess,
+  BookOpen: FcReading,
+  Map: FcGlobe,
+  Layers: FcMindMap,
+  Library: FcRules,
+  FileCode: FcDocument,
+  Zap: FcIdea,
+  HardDrive: FcElectronics,
+  ShieldCheck: FcKey,
+  Globe: FcGlobe,
+  Server: FcDeployment,
+  Database: FcDatabase,
+  Terminal: FcCommandLine,
+  Cpu: FcEngineering,
+  GitBranch: FcTreeStructure,
+  Package: FcPackage,
+  Wrench: FcSettings,
+  LayoutDashboard: FcTemplate,
+  Rocket: FcFlowChart,
+  // 추가 fc 아이콘
+  Folder: FcFolder,
+  Binoculars: FcBinoculars,
+  MultipleDevices: FcMultipleDevices,
+  Workflow: FcWorkflow,
+  PieChart: FcPieChart,
+  Bullish: FcBullish,
+  Survey: FcSurvey,
+  Organization: FcOrganization,
+  ConferenceCall: FcConferenceCall,
+  Automatic: FcAutomatic,
+  About: FcAbout,
+  GoodDecision: FcGoodDecision,
+  // 확장 아이콘
+  AcceptDatabase: FcAcceptDatabase,
+  AndroidOs: FcAndroidOs,
+  Approval: FcApproval,
+  AreaChart: FcAreaChart,
+  Assistant: FcAssistant,
+  BarChart: FcBarChart,
+  Briefcase: FcBriefcase,
+  Business: FcBusiness,
+  Calendar: FcCalendar,
+  Checkmark: FcCheckmark,
+  Collaboration: FcCollaboration,
+  Comments: FcComments,
+  DataBackup: FcDataBackup,
+  DataConfiguration: FcDataConfiguration,
+  DataEncryption: FcDataEncryption,
+  DataProtection: FcDataProtection,
+  Decision: FcDecision,
+  Department: FcDepartment,
+  Display: FcDisplay,
+  Film: FcFilm,
+  Gallery: FcGallery,
+  Genealogy: FcGenealogy,
+  GraduationCap: FcGraduationCap,
+  Headset: FcHeadset,
+  HighPriority: FcHighPriority,
+  Home: FcHome,
+  Info: FcInfo,
+  Inspection: FcInspection,
+  Library: FcLibrary,
+  LineChart: FcLineChart,
+  Linux: FcLinux,
+  List: FcList,
+  Lock: FcLock,
+  Manager: FcManager,
+  MoneyTransfer: FcMoneyTransfer,
+  News: FcNews,
+  OnlineSupport: FcOnlineSupport,
+  ParallelTasks: FcParallelTasks,
+  Phone: FcPhone,
+  Picture: FcPicture,
+  Planner: FcPlanner,
+  PositiveDynamic: FcPositiveDynamic,
+  Print: FcPrint,
+  Privacy: FcPrivacy,
+  Puzzle: FcPuzzle,
+  Questions: FcQuestions,
+  Search: FcSearch,
+  SerialTasks: FcSerialTasks,
+  Services: FcServices,
+  SmartphoneTablet: FcSmartphoneTablet,
+  StackOfPhotos: FcStackOfPhotos,
+  Start: FcStart,
+  Statistics: FcStatistics,
+  Timeline: FcTimeline,
+  TodoList: FcTodoList,
+  Unlock: FcUnlock,
+  Upload: FcUpload,
+  VideoCall: FcVideoCall,
+  VideoFile: FcVideoFile,
+  ViewDetails: FcViewDetails,
+  CurrencyExchange: FcCurrencyExchange,
+  NumericalSorting: FcNumericalSorting12,
+  DataSheet: FcDataSheet,
+  Circuit: FcCircuit,
+  Capacitor: FcCapacitor,
+  ElectroDevices: FcElectroDevices,
+  WiFiLogo: FcWiFiLogo,
 };
 
-export const ICON_COLOR_MAP: Record<string, string> = {
-  Code2: "text-blue-500",
-  BookOpen: "text-indigo-500",
-  Map: "text-emerald-500",
-  Layers: "text-cyan-500",
-  Library: "text-amber-500",
-  FileCode: "text-sky-500",
-  Zap: "text-yellow-500",
-  HardDrive: "text-slate-500",
-  ShieldCheck: "text-green-500",
-  Globe: "text-blue-400",
-  Server: "text-gray-500",
-  Database: "text-teal-500",
-  Terminal: "text-green-600",
-  Cpu: "text-purple-500",
-  GitBranch: "text-orange-500",
-  Package: "text-amber-600",
-  Wrench: "text-gray-400",
-  LayoutDashboard: "text-violet-500",
-  Rocket: "text-rose-500",
-};
+// fc 아이콘은 자체 색상을 가지므로 색상 맵 불필요 (하위 호환용 빈 객체 유지)
+export const ICON_COLOR_MAP: Record<string, string> = {};
 
 export const ICON_OPTIONS = Object.keys(ICON_MAP);
 
@@ -127,7 +268,6 @@ export function IconPicker({
 
   const isCustom = value ? isCustomIcon(value) : false;
   const SelectedIcon = !isCustom && value ? ICON_MAP[value] : null;
-  const selectedColor = !isCustom && value ? ICON_COLOR_MAP[value] : undefined;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -147,7 +287,7 @@ export function IconPicker({
               </>
             ) : SelectedIcon ? (
               <>
-                <SelectedIcon className={cn("h-4 w-4 shrink-0", selectedColor)} />
+                <SelectedIcon className="h-4 w-4 shrink-0" />
                 <span>{value}</span>
               </>
             ) : (
@@ -162,11 +302,10 @@ export function IconPicker({
           <CommandInput placeholder="아이콘 검색..." />
           <CommandList>
             <CommandEmpty>검색 결과가 없습니다.</CommandEmpty>
-            {/* 기본 Lucide 아이콘 목록 */}
+            {/* 기본 fc 아이콘 목록 */}
             <CommandGroup heading="기본 아이콘">
               {ICON_OPTIONS.map((iconName) => {
                 const Icon = ICON_MAP[iconName];
-                const iconColor = ICON_COLOR_MAP[iconName];
                 return (
                   <CommandItem
                     key={iconName}
@@ -176,7 +315,7 @@ export function IconPicker({
                       setOpen(false);
                     }}
                   >
-                    <Icon className={cn("h-4 w-4 shrink-0", iconColor)} />
+                    <Icon className="h-4 w-4 shrink-0" />
                     <span>{iconName}</span>
                     <Check
                       className={cn(

@@ -4,7 +4,7 @@ description: dev
 section: devops
 sectionIcon: Layers
 category: docker
-categoryIcon: ShieldCheck
+categoryIcon: Package
 subcategory: 기초
 subcategoryIcon: Layers
 date: "2026-03-20"

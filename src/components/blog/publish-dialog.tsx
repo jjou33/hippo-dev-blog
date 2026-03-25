@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
-import { ICON_MAP, ICON_COLOR_MAP } from "@/components/blog/icon-picker";
+import { ICON_MAP } from "@/components/blog/icon-picker";
 import type { DraftPost } from "@/app/admin/write/page";
 
 interface PublishDialogProps {
@@ -156,8 +156,6 @@ export function PublishDialog({
           {drafts.map((draft) => {
             const SectionIcon = draft.sectionIcon ? ICON_MAP[draft.sectionIcon] : null;
             const CategoryIcon = draft.categoryIcon ? ICON_MAP[draft.categoryIcon] : null;
-            const sectionIconColor = draft.sectionIcon ? ICON_COLOR_MAP[draft.sectionIcon] : undefined;
-            const categoryIconColor = draft.categoryIcon ? ICON_COLOR_MAP[draft.categoryIcon] : undefined;
 
             return (
               <div
@@ -176,7 +174,7 @@ export function PublishDialog({
                         variant="secondary"
                         className="gap-1 text-xs px-2 py-0.5 h-5 bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-100"
                       >
-                        {SectionIcon && <SectionIcon className={`h-3 w-3 shrink-0 ${sectionIconColor ?? ""}`} />}
+                        {SectionIcon && <SectionIcon className="h-3 w-3 shrink-0" />}
                         {draft.section}
                       </Badge>
                     )}
@@ -185,7 +183,7 @@ export function PublishDialog({
                         variant="outline"
                         className="gap-1 text-xs px-2 py-0.5 h-5 bg-emerald-50 text-emerald-700 border-emerald-200"
                       >
-                        {CategoryIcon && <CategoryIcon className={`h-3 w-3 shrink-0 ${categoryIconColor ?? ""}`} />}
+                        {CategoryIcon && <CategoryIcon className="h-3 w-3 shrink-0" />}
                         {draft.category}
                       </Badge>
                     )}
