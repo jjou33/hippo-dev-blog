@@ -12,9 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Lock, Pencil, Trash2 } from "lucide-react";
 import { ICON_MAP } from "@/components/blog/icon-picker";
 import type { DraftPost } from "@/app/admin/write/page";
+import { getBlogDrafts, setBlogDrafts } from "@/lib/blog-drafts-storage";
 
 interface PublishDialogProps {
   open: boolean;
@@ -60,16 +61,10 @@ export function PublishDialog({
     }
   };
 
-  const handleDelete = (id: string) => {
-    const raw = localStorage.getItem("blog_drafts");
-    const allDrafts: DraftPost[] = raw ? JSON.parse(raw) : [];
+  const handleDelete = async (id: string) => {
+    const allDrafts = await getBlogDrafts();
     const remaining = allDrafts.filter((d) => d.id !== id);
-
-    if (remaining.length === 0) {
-      localStorage.removeItem("blog_drafts");
-    } else {
-      localStorage.setItem("blog_drafts", JSON.stringify(remaining));
-    }
+    await setBlogDrafts(remaining);
 
     // 체크 상태에서도 제거
     setCheckedIds((prev) => {
@@ -104,16 +99,9 @@ export function PublishDialog({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "발행에 실패했습니다.");
 
-      // 발행된 draft들만 localStorage에서 제거
-      const raw = localStorage.getItem("blog_drafts");
-      const allDrafts: DraftPost[] = raw ? JSON.parse(raw) : [];
+      const allDrafts = await getBlogDrafts();
       const remaining = allDrafts.filter((d) => !checkedIds.has(d.id));
-
-      if (remaining.length === 0) {
-        localStorage.removeItem("blog_drafts");
-      } else {
-        localStorage.setItem("blog_drafts", JSON.stringify(remaining));
-      }
+      await setBlogDrafts(remaining);
 
       window.dispatchEvent(new Event("drafts-updated"));
       onPublished();
@@ -169,6 +157,15 @@ export function PublishDialog({
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{draft.title}</p>
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                    {draft.adminOnly && (
+                      <Badge
+                        variant="outline"
+                        className="gap-1 text-xs px-2 py-0.5 h-5 bg-amber-50 text-amber-600 border-amber-200"
+                      >
+                        <Lock className="h-3 w-3 shrink-0" />
+                        관리자 전용
+                      </Badge>
+                    )}
                     {draft.section && (
                       <Badge
                         variant="secondary"

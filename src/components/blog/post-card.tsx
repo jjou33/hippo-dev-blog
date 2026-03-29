@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Lock } from "lucide-react";
 import type { BlogPost } from "@/types/blog";
 
 const TAG_COLORS = [
@@ -36,6 +37,11 @@ export function PostCard({ post }: PostCardProps) {
         <div className="ml-2 flex-1 rounded bg-muted px-2 py-0.5 text-[11px] text-muted-foreground truncate">
           hippo-docs/{post.slug}
         </div>
+        {post.adminOnly && (
+          <span title="관리자 전용">
+            <Lock className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+          </span>
+        )}
       </div>
 
       {/* 썸네일 영역 */}

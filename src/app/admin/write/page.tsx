@@ -12,6 +12,8 @@ import { Header } from "@/components/blog/header";
 import { IconPicker } from "@/components/blog/icon-picker";
 import { CategorySelectInput } from "@/components/admin/category-select-input";
 import { TagInput } from "@/components/admin/tag-input";
+import { Switch } from "@/components/ui/switch";
+import { getBlogDrafts, setBlogDrafts } from "@/lib/blog-drafts-storage";
 import { ArrowLeft, Save, Loader2, ImagePlus, X } from "lucide-react";
 import Link from "next/link";
 
@@ -36,6 +38,7 @@ export type DraftPost = {
   heroImageBase64?: string;
   heroImageExt?: string;
   heroImage?: string;
+  adminOnly?: boolean;
 };
 
 function generateSlug(value: string) {
@@ -61,6 +64,7 @@ export default function AdminWritePage() {
   const [subcategory, setSubcategory] = useState("");
   const [subcategoryIcon, setSubcategoryIcon] = useState("");
   const [tags, setTags] = useState<string[]>([]);
+  const [adminOnly, setAdminOnly] = useState(false);
   const [content, setContent] = useState("# 새 포스트\n\n내용을 작성하세요...");
   const [heroImageBase64, setHeroImageBase64] = useState("");
   const [heroImageExt, setHeroImageExt] = useState("");
@@ -92,27 +96,35 @@ export default function AdminWritePage() {
 
   // 발행 다이얼로그에서 수정 버튼 클릭 시 draft 로드
   useEffect(() => {
+    let cancelled = false;
     const editingSlug = localStorage.getItem("blog_draft_editing");
     if (!editingSlug) return;
-    const raw = localStorage.getItem("blog_drafts");
-    if (!raw) return;
-    const drafts: DraftPost[] = JSON.parse(raw);
-    const draft = drafts.find((d) => d.id === editingSlug);
-    if (!draft) return;
-    setTitle(draft.title);
-    setSlug(draft.slug);
-    setDescription(draft.description);
-    setSection(draft.section);
-    setSectionIcon(draft.sectionIcon);
-    setCategory(draft.category);
-    setCategoryIcon(draft.categoryIcon);
-    setSubcategory(draft.subcategory ?? "");
-    setSubcategoryIcon(draft.subcategoryIcon ?? "");
-    setTags(Array.isArray(draft.tags) ? draft.tags : []);
-    setContent(draft.content);
-    if (draft.heroImageBase64) setHeroImageBase64(draft.heroImageBase64);
-    if (draft.heroImageExt) setHeroImageExt(draft.heroImageExt);
-    localStorage.removeItem("blog_draft_editing");
+
+    void (async () => {
+      const drafts = await getBlogDrafts();
+      if (cancelled) return;
+      const draft = drafts.find((d) => d.id === editingSlug);
+      if (!draft) return;
+      setTitle(draft.title);
+      setSlug(draft.slug);
+      setDescription(draft.description);
+      setSection(draft.section);
+      setSectionIcon(draft.sectionIcon);
+      setCategory(draft.category);
+      setCategoryIcon(draft.categoryIcon);
+      setSubcategory(draft.subcategory ?? "");
+      setSubcategoryIcon(draft.subcategoryIcon ?? "");
+      setTags(Array.isArray(draft.tags) ? draft.tags : []);
+      setContent(draft.content);
+      if (draft.heroImageBase64) setHeroImageBase64(draft.heroImageBase64);
+      if (draft.heroImageExt) setHeroImageExt(draft.heroImageExt);
+      setAdminOnly(draft.adminOnly ?? false);
+      localStorage.removeItem("blog_draft_editing");
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // 이미지 파일 → GitHub 업로드 → URL 반환
@@ -312,7 +324,7 @@ export default function AdminWritePage() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title || !slug || !content) {
       setMessage({ type: "error", text: "제목, 슬러그, 내용은 필수입니다." });
       return;
@@ -335,16 +347,24 @@ export default function AdminWritePage() {
       author: session.user.name ?? "admin",
       savedAt: new Date().toISOString(),
       ...(heroImageBase64 ? { heroImageBase64, heroImageExt } : {}),
+      adminOnly,
     };
 
-    const raw = localStorage.getItem("blog_drafts");
-    const drafts: DraftPost[] = raw ? JSON.parse(raw) : [];
-    const idx = drafts.findIndex((d) => d.id === draft.id);
-    if (idx >= 0) drafts[idx] = draft;
-    else drafts.push(draft);
-    localStorage.setItem("blog_drafts", JSON.stringify(drafts));
-    window.dispatchEvent(new Event("drafts-updated"));
-    router.push("/");
+    try {
+      const drafts = await getBlogDrafts();
+      const idx = drafts.findIndex((d) => d.id === draft.id);
+      if (idx >= 0) drafts[idx] = draft;
+      else drafts.push(draft);
+      await setBlogDrafts(drafts);
+      window.dispatchEvent(new Event("drafts-updated"));
+      router.push("/");
+    } catch (e) {
+      const text =
+        e instanceof Error
+          ? e.message
+          : "임시 저장에 실패했습니다. 브라우저 저장 공간을 확인하거나 히어로 이미지·본문 용량을 줄여 보세요.";
+      setMessage({ type: "error", text });
+    }
   };
 
   return (
@@ -449,6 +469,17 @@ export default function AdminWritePage() {
           <div className="space-y-2 sm:col-span-2">
             <label className="text-sm font-medium">태그</label>
             <TagInput value={tags} onChange={setTags} />
+          </div>
+          <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 sm:col-span-2">
+            <Switch
+              id="admin-only"
+              checked={adminOnly}
+              onCheckedChange={setAdminOnly}
+            />
+            <div>
+              <label htmlFor="admin-only" className="text-sm font-medium cursor-pointer">관리자 전용</label>
+              <p className="text-xs text-muted-foreground">활성화하면 일반 사용자에게 이 포스트가 표시되지 않습니다.</p>
+            </div>
           </div>
         </div>
 

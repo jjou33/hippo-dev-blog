@@ -1,0 +1,32 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 귀 (왼쪽) -->
+  <circle cx="15" cy="20" r="8" fill="#c0dfe5"/>
+  <circle cx="15" cy="20" r="4.5" fill="#99c9d2"/>
+
+  <!-- 귀 (오른쪽) -->
+  <circle cx="49" cy="20" r="8" fill="#c0dfe5"/>
+  <circle cx="49" cy="20" r="4.5" fill="#99c9d2"/>
+
+  <!-- 히포 얼굴 (넓은 타원) -->
+  <ellipse cx="32" cy="38" rx="21" ry="18" fill="#c0dfe5"/>
+
+  <!-- 눈 흰자 (왼쪽) -->
+  <circle cx="23" cy="30" r="5.5" fill="white"/>
+  <!-- 눈 흰자 (오른쪽) -->
+  <circle cx="41" cy="30" r="5.5" fill="white"/>
+
+  <!-- 눈동자 (왼쪽) -->
+  <circle cx="23.5" cy="30.8" r="3" fill="#0d3d45"/>
+  <!-- 눈동자 (오른쪽) -->
+  <circle cx="41.5" cy="30.8" r="3" fill="#0d3d45"/>
+
+  <!-- 눈 하이라이트 (왼쪽) -->
+  <circle cx="25" cy="29.2" r="1" fill="white"/>
+  <!-- 눈 하이라이트 (오른쪽) -->
+  <circle cx="43" cy="29.2" r="1" fill="white"/>
+
+  <!-- 콧구멍 (왼쪽) -->
+  <ellipse cx="27" cy="43" rx="3.8" ry="2.8" fill="#99c9d2"/>
+  <!-- 콧구멍 (오른쪽) -->
+  <ellipse cx="37" cy="43" rx="3.8" ry="2.8" fill="#99c9d2"/>
+</svg>

@@ -5,15 +5,19 @@ import { HeroSection } from "@/components/blog/hero-section";
 import { HomeContent } from "@/components/blog/home-content";
 import { getNavigationFromPosts, getAllPosts } from "@/lib/posts";
 import { logo } from "@/lib/blog-data";
+import { auth } from "@/auth";
 
 const visitorStats = {
   today: 100,
   total: 1000,
 };
 
-export default function DocsPage() {
-  const navigationData = getNavigationFromPosts();
-  const posts = getAllPosts();
+export default async function DocsPage() {
+  const session = await auth();
+  const isAdmin = session?.user.role === "admin";
+  const allPosts = getAllPosts();
+  const posts = isAdmin ? allPosts : allPosts.filter((p) => !p.adminOnly);
+  const navigationData = getNavigationFromPosts(undefined, posts);
 
   // 포스트 수 및 상위 태그 계산
   const postCount = posts.length;

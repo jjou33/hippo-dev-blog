@@ -12,6 +12,7 @@ subcategory: OMC 가이드
 subcategoryIcon: Map
 date: "2026-03-22"
 author: 조현우
+adminOnly: true
 heroImage: ./thumbnail.png
 ---
 

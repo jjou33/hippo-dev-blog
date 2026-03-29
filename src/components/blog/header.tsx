@@ -37,6 +37,10 @@ import {
 } from "@/components/blog/icon-picker";
 import type { DraftPost } from "@/app/admin/write/page";
 import type { BlogPost } from "@/types/blog";
+import {
+  getBlogDrafts,
+  BLOG_DRAFTS_SYNC_KEY,
+} from "@/lib/blog-drafts-storage";
 
 const navItems = [
   { label: "시작", href: "/docs" },
@@ -231,20 +235,23 @@ export function Header({ posts: propPosts }: HeaderProps) {
   };
 
   const syncDrafts = () => {
-    const raw = localStorage.getItem("blog_drafts");
-    setDrafts(raw ? JSON.parse(raw) : []);
+    void getBlogDrafts().then(setDrafts);
   };
 
   useEffect(() => {
     syncDrafts();
 
-    // 다른 탭에서 localStorage 변경 시 대응
-    window.addEventListener("storage", syncDrafts);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "blog_drafts" || e.key === BLOG_DRAFTS_SYNC_KEY) {
+        syncDrafts();
+      }
+    };
+    window.addEventListener("storage", onStorage);
     // 같은 탭에서 저장 시 대응 (write 페이지에서 커스텀 이벤트 발행)
     window.addEventListener("drafts-updated", syncDrafts);
 
     return () => {
-      window.removeEventListener("storage", syncDrafts);
+      window.removeEventListener("storage", onStorage);
       window.removeEventListener("drafts-updated", syncDrafts);
     };
   }, []);

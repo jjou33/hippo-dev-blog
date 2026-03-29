@@ -26,6 +26,7 @@ type DraftPost = {
   heroImageBase64?: string;
   heroImageExt?: string;
   heroImage?: string; // 기존 이미지 경로 유지용
+  adminOnly?: boolean;
 };
 
 // raw.githubusercontent.com URL 생성 헬퍼
@@ -118,6 +119,7 @@ export async function POST(request: Request) {
         date: date ?? new Date().toISOString().split("T")[0],
         author: author ?? "admin",
         ...(heroImagePath ? { heroImage: heroImagePath } : {}),
+        ...(draft.adminOnly ? { adminOnly: true } : {}),
       });
 
       const filePath = `${postDir}/index.md`;

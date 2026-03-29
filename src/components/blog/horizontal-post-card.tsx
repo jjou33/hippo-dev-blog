@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Lock } from "lucide-react";
 import type { BlogPost } from "@/types/blog";
 
 // 태그별 색상 (순환 배치)
@@ -70,6 +71,13 @@ export function HorizontalPostCard({ post }: HorizontalPostCardProps) {
 
       {/* 오른쪽 콘텐츠 영역 */}
       <div className="flex flex-1 flex-col justify-between p-4 min-w-0">
+        {/* 관리자 전용 뱃지 */}
+        {post.adminOnly && (
+          <div className="mb-1.5 flex items-center gap-1 text-[11px] font-medium text-amber-500">
+            <Lock className="h-3 w-3" />
+            <span>관리자 전용</span>
+          </div>
+        )}
         {/* 태그 칩 */}
         {post.tags && post.tags.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-1">

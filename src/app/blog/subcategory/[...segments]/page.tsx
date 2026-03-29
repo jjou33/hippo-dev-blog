@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
 import { getPostsBySubcategory, getSubcategoryCoverImage } from "@/lib/posts";
+import { auth } from "@/auth";
 import { PostCard } from "@/components/blog/post-card";
 import { SubcategoryCoverSection } from "@/components/blog/subcategory-cover-section";
 import { SubcategoryUploadButton } from "@/components/blog/subcategory-upload-button";
@@ -24,7 +25,10 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
   const { segments } = await params;
   const [section, category, subcategory] = segments.map(decodeURIComponent);
 
-  const posts = getPostsBySubcategory(section, category, subcategory);
+  const session = await auth();
+  const isAdmin = session?.user.role === "admin";
+  const allPosts = getPostsBySubcategory(section, category, subcategory);
+  const posts = isAdmin ? allPosts : allPosts.filter((p) => !p.adminOnly);
 
   if (posts.length === 0) {
     notFound();

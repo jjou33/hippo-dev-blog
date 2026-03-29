@@ -84,6 +84,7 @@ function parsePostFile(filePath: string, slug: string): BlogPost {
     heroImageFit: data.heroImageFit === "contain" ? "contain" : "cover",
     featured: data.featured ?? false,
     tags: parseTags(data.tags),
+    adminOnly: data.adminOnly ?? false,
     content,
   } satisfies BlogPost;
 }
@@ -140,8 +141,8 @@ export function getPostBySlug(slug: string): BlogPost | null {
 }
 
 // section > category > subcategory > posts 4단계 계층 구조로 네비게이션 데이터 생성
-export function getNavigationFromPosts(currentSlug?: string): NavSection[] {
-  const posts = getAllPosts();
+export function getNavigationFromPosts(currentSlug?: string, postsInput?: BlogPost[]): NavSection[] {
+  const posts = postsInput ?? getAllPosts();
 
   type SubcategoryData = { icon?: string; posts: BlogPost[] };
   type CategoryData = { icon?: string; subcategories: Map<string, SubcategoryData> };

@@ -3,15 +3,19 @@ import { Sidebar } from "@/components/blog/sidebar";
 import { MobileSidebar } from "@/components/blog/mobile-sidebar";
 import { getAllPosts, getNavigationFromPosts } from "@/lib/posts";
 import { kv } from "@vercel/kv";
+import { auth } from "@/auth";
 
 export default async function BlogLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  const isAdmin = session?.user.role === "admin";
   const allPosts = getAllPosts();
+  const posts = isAdmin ? allPosts : allPosts.filter((p) => !p.adminOnly);
   // 슬러그 없이 호출 - active 상태는 Sidebar에서 usePathname()으로 처리
-  const navigationData = getNavigationFromPosts();
+  const navigationData = getNavigationFromPosts(undefined, posts);
 
   let visitorStats = { today: 0, total: 0 };
   try {
@@ -27,13 +31,13 @@ export default async function BlogLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <Header posts={allPosts} />
+      <Header posts={posts} />
 
       <div className="max-w-full">
         <div className="flex">
           <Sidebar
             sections={navigationData}
-            postCount={allPosts.length}
+            postCount={posts.length}
             visitorStats={visitorStats}
           />
           {children}
