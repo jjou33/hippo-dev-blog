@@ -15,6 +15,7 @@ import {
   Send,
   Sun,
   MoonStar,
+  ExternalLink,
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -41,35 +42,7 @@ import {
   getBlogDrafts,
   BLOG_DRAFTS_SYNC_KEY,
 } from "@/lib/blog-drafts-storage";
-
-const navItems = [
-  { label: "시작", href: "/docs" },
-  {
-    label: "제품",
-    items: [
-      { label: "데이터베이스", href: "/products/database" },
-      { label: "인증", href: "/products/auth" },
-      { label: "스토리지", href: "/products/storage" },
-    ],
-  },
-  {
-    label: "가이드",
-    items: [
-      { label: "웹 앱", href: "/guides/web" },
-      { label: "모바일 앱", href: "/guides/mobile" },
-      { label: "서버리스", href: "/guides/serverless" },
-    ],
-  },
-  { label: "레퍼런스", href: "/reference" },
-  {
-    label: "리소스",
-    items: [
-      { label: "블로그", href: "/blog" },
-      { label: "커뮤니티", href: "/community" },
-      { label: "변경 로그", href: "/changelog" },
-    ],
-  },
-];
+import { NAV_ITEMS } from "@/constants/navigation";
 
 function UserMenu() {
   const { data: session, status } = useSession();
@@ -276,7 +249,7 @@ export function Header({ posts: propPosts }: HeaderProps) {
 
           {/* Navigation */}
           <nav className="hidden items-center gap-1 md:flex">
-            {navItems.map((item) =>
+            {NAV_ITEMS.map((item) =>
               item.items ? (
                 <DropdownMenu key={item.label}>
                   <DropdownMenuTrigger asChild>
@@ -292,11 +265,40 @@ export function Header({ posts: propPosts }: HeaderProps) {
                   <DropdownMenuContent align="start">
                     {item.items.map((subItem) => (
                       <DropdownMenuItem key={subItem.label} asChild>
-                        <Link href={subItem.href}>{subItem.label}</Link>
+                        {subItem.external ? (
+                          <a
+                            href={subItem.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5"
+                          >
+                            {subItem.label}
+                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                          </a>
+                        ) : (
+                          <Link href={subItem.href}>{subItem.label}</Link>
+                        )}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
+              ) : item.external ? (
+                <Button
+                  key={item.label}
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1 text-sm text-muted-foreground hover:text-foreground"
+                  asChild
+                >
+                  <a
+                    href={item.href ?? "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.label}
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </Button>
               ) : (
                 <Button
                   key={item.label}
@@ -305,7 +307,7 @@ export function Header({ posts: propPosts }: HeaderProps) {
                   className="text-sm text-muted-foreground hover:text-foreground"
                   asChild
                 >
-                  <Link href={item.href}>{item.label}</Link>
+                  <Link href={item.href ?? "#"}>{item.label}</Link>
                 </Button>
               ),
             )}

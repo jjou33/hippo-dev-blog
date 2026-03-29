@@ -1,7 +1,27 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import type { BlogPost, NavSection, NavItem } from "@/types/blog";
+import type { BlogPost, NavSection, NavItem, TableOfContentsItem } from "@/types/blog";
+
+// 마크다운 컨텐츠에서 h2, h3 헤딩을 추출하여 TOC 아이템 배열로 반환
+export function extractHeadings(content: string): TableOfContentsItem[] {
+  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+  const items: TableOfContentsItem[] = [];
+  let match;
+
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length - 1; // h2 -> 1, h3 -> 2
+    const title = match[2].trim();
+    const id = title
+      .toLowerCase()
+      .replace(/[^\w\s\uAC00-\uD7AF-]/g, "")
+      .replace(/\s+/g, "-");
+
+    items.push({ title, href: `#${id}`, level });
+  }
+
+  return items;
+}
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
 

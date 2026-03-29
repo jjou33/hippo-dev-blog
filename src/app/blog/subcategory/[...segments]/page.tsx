@@ -21,7 +21,9 @@ export async function generateMetadata({ params }: SubcategoryPageProps) {
   };
 }
 
-export default async function SubcategoryPage({ params }: SubcategoryPageProps) {
+export default async function SubcategoryPage({
+  params,
+}: SubcategoryPageProps) {
   const { segments } = await params;
   const [section, category, subcategory] = segments.map(decodeURIComponent);
 
@@ -40,7 +42,10 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
     <div className="flex flex-1 min-w-0">
       <main className="flex-1 min-w-0 px-6 py-8 lg:px-10">
         {/* 커버 이미지 (이미지 있을 때만 표시) */}
-        <SubcategoryCoverSection subcategory={subcategory} coverImage={coverImage} />
+        <SubcategoryCoverSection
+          subcategory={subcategory}
+          coverImage={coverImage}
+        />
 
         {/* 헤더 영역 */}
         <div className="mb-8">
@@ -57,8 +62,13 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
             {subcategory}
           </h1>
           <div className="mt-1.5 flex items-center gap-2">
-            <p className="text-sm text-muted-foreground">{posts.length}개의 포스트</p>
-            <SubcategoryUploadButton subcategory={subcategory} hasCoverImage={!!coverImage} />
+            <p className="text-sm text-muted-foreground">
+              {posts.length}개의 포스트
+            </p>
+            <SubcategoryUploadButton
+              subcategory={subcategory}
+              hasCoverImage={!!coverImage}
+            />
           </div>
         </div>
 
@@ -71,7 +81,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
       </main>
 
       {/* 오른쪽 빈 여백 (기존 TOC 레이아웃과 일관성 유지) */}
-      <aside className="hidden w-56 shrink-0 xl:block" />
+      {/* <aside className="hidden w-56 shrink-0 xl:block" /> */}
     </div>
   );
 }
