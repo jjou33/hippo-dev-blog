@@ -42,7 +42,7 @@
 
 .dark {
   /* GitHub Dimmed 다크모드 스타일 (#22272e 기반) */
-  --background: oklch(0.20 0.012 250); /* #22272e */
+  --background: oklch(0.2 0.012 250); /* #22272e */
   --foreground: oklch(0.87 0.008 250); /* #cdd9e5 */
   --card: oklch(0.235 0.012 250); /* #2d333b */
   --card-foreground: oklch(0.87 0.008 250);
@@ -53,7 +53,7 @@
   --secondary: oklch(0.265 0.012 250); /* #373e47 */
   --secondary-foreground: oklch(0.87 0.008 250);
   --muted: oklch(0.265 0.012 250); /* #373e47 */
-  --muted-foreground: oklch(0.565 0.012 250); /* #768390 */
+  --muted-foreground: oklch(0.82 0.006 250); /* 밝은 화이트 톤 */
   --accent: oklch(0.265 0.012 250); /* #373e47 */
   --accent-foreground: oklch(0.87 0.008 250);
   --destructive: oklch(0.396 0.141 25.723);

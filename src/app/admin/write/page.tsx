@@ -39,6 +39,7 @@ export type DraftPost = {
   heroImageExt?: string;
   heroImage?: string;
   adminOnly?: boolean;
+  featured?: boolean;
 };
 
 function generateSlug(value: string) {
@@ -65,6 +66,7 @@ export default function AdminWritePage() {
   const [subcategoryIcon, setSubcategoryIcon] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [adminOnly, setAdminOnly] = useState(false);
+  const [featured, setFeatured] = useState(false);
   const [content, setContent] = useState("# 새 포스트\n\n내용을 작성하세요...");
   const [heroImageBase64, setHeroImageBase64] = useState("");
   const [heroImageExt, setHeroImageExt] = useState("");
@@ -119,6 +121,7 @@ export default function AdminWritePage() {
       if (draft.heroImageBase64) setHeroImageBase64(draft.heroImageBase64);
       if (draft.heroImageExt) setHeroImageExt(draft.heroImageExt);
       setAdminOnly(draft.adminOnly ?? false);
+      setFeatured(draft.featured ?? false);
       localStorage.removeItem("blog_draft_editing");
     })();
 
@@ -348,6 +351,7 @@ export default function AdminWritePage() {
       savedAt: new Date().toISOString(),
       ...(heroImageBase64 ? { heroImageBase64, heroImageExt } : {}),
       adminOnly,
+      featured,
     };
 
     try {
@@ -470,15 +474,28 @@ export default function AdminWritePage() {
             <label className="text-sm font-medium">태그</label>
             <TagInput value={tags} onChange={setTags} />
           </div>
-          <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 sm:col-span-2">
-            <Switch
-              id="admin-only"
-              checked={adminOnly}
-              onCheckedChange={setAdminOnly}
-            />
-            <div>
-              <label htmlFor="admin-only" className="text-sm font-medium cursor-pointer">관리자 전용</label>
-              <p className="text-xs text-muted-foreground">활성화하면 일반 사용자에게 이 포스트가 표시되지 않습니다.</p>
+          <div className="flex flex-col gap-3 rounded-lg border border-border px-4 py-3 sm:col-span-2">
+            <div className="flex items-center gap-3">
+              <Switch
+                id="admin-only"
+                checked={adminOnly}
+                onCheckedChange={setAdminOnly}
+              />
+              <div>
+                <label htmlFor="admin-only" className="text-sm font-medium cursor-pointer">관리자 전용</label>
+                <p className="text-xs text-muted-foreground">활성화하면 일반 사용자에게 이 포스트가 표시되지 않습니다.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="featured"
+                checked={featured}
+                onCheckedChange={setFeatured}
+              />
+              <div>
+                <label htmlFor="featured" className="text-sm font-medium cursor-pointer">추천 포스트</label>
+                <p className="text-xs text-muted-foreground">활성화하면 홈 히어로 캐러셀에 추천 포스트로 노출됩니다.</p>
+              </div>
             </div>
           </div>
         </div>

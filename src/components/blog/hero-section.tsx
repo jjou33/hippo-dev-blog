@@ -148,9 +148,9 @@ export function HeroSection({
       <div className="absolute inset-0 bg-black/60" />
 
       {/* 좌우 레이아웃 */}
-      <div className="flex justify-between absolute inset-0 items-center px-10 py-8 text-white md:px-14">
-        {/* ── 왼쪽: 타이틀 영역 ── */}
-        <div className="flex flex-col justify-center gap-3 flex-1 max-w-lg ml-30 mt-15 ">
+      <div className="flex justify-center lg:justify-between absolute inset-0 items-center px-6 py-8 text-white md:px-14">
+        {/* ── 왼쪽: 타이틀 영역 (모바일: 중앙 정렬) ── */}
+        <div className="flex flex-col justify-center items-center text-center lg:items-start lg:text-left gap-3 flex-1 max-w-lg lg:ml-30 mt-15">
           <span className="inline-flex w-fit items-center rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold tracking-widest uppercase backdrop-blur-sm">
             DEV BLOG
           </span>
@@ -166,7 +166,7 @@ export function HeroSection({
             개발자의 경험과 인사이트를 기록합니다
           </p>
 
-          <div className="flex gap-3 pt-1">
+          <div className="flex justify-center lg:justify-start gap-3 pt-1">
             <button
               onClick={handleScrollToContent}
               className="inline-flex items-center gap-1.5 rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition-opacity hover:opacity-90"
@@ -196,7 +196,7 @@ export function HeroSection({
           </div>
 
           {/* 통계 + 태그 */}
-          <div className="flex items-center gap-2 flex-wrap pt-1">
+          <div className="flex items-center justify-center lg:justify-start gap-2 flex-wrap pt-1">
             <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium backdrop-blur-sm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -367,12 +367,21 @@ export function PostHeroSection({
   alt = "포스트 히어로 이미지",
 }: PostHeroSectionProps) {
   return (
-    <div className="relative h-[50vh] w-full overflow-hidden md:h-[55vh] lg:h-[60vh]">
+    <div className="relative flex items-center justify-center h-[50vh] w-full overflow-hidden md:h-[55vh] lg:h-[60vh]">
+      {/* 블러 배경 */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover object-center scale-110 blur-2xl brightness-75"
+      />
+      {/* 원본 이미지 */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt}
-        className="h-full w-full object-cover object-center"
+        className="relative h-[85%] w-[85%] object-contain object-center"
       />
       <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-background opacity-50" />
     </div>

@@ -12,6 +12,7 @@ import { Header } from "@/components/blog/header";
 import { IconPicker } from "@/components/blog/icon-picker";
 import { CategorySelectInput } from "@/components/admin/category-select-input";
 import { TagInput } from "@/components/admin/tag-input";
+import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Send, Loader2, ImagePlus, X } from "lucide-react";
 import Link from "next/link";
 import type { BlogPost } from "@/types/blog";
@@ -37,6 +38,8 @@ export function EditPageContent({ post }: EditPageContentProps) {
   const [subcategoryIcon, setSubcategoryIcon] = useState(post.subcategoryIcon ?? "");
   const [tags, setTags] = useState<string[]>(post.tags ?? []);
   const [content, setContent] = useState(post.content);
+  const [adminOnly, setAdminOnly] = useState(post.adminOnly ?? false);
+  const [featured, setFeatured] = useState(post.featured ?? false);
   const [heroImageBase64, setHeroImageBase64] = useState("");
   const [heroImageExt, setHeroImageExt] = useState("");
   const [existingHeroImage] = useState(post.heroImage ?? "");
@@ -281,6 +284,8 @@ export function EditPageContent({ post }: EditPageContentProps) {
       date: post.date || new Date().toISOString().split("T")[0],
       author: post.author || session?.user?.name || "admin",
       savedAt: new Date().toISOString(),
+      adminOnly,
+      featured,
       ...heroFields,
     };
 
@@ -414,6 +419,30 @@ export function EditPageContent({ post }: EditPageContentProps) {
           <div className="space-y-2 sm:col-span-2">
             <label className="text-sm font-medium">태그</label>
             <TagInput value={tags} onChange={setTags} />
+          </div>
+          <div className="flex flex-col gap-3 rounded-lg border border-border px-4 py-3 sm:col-span-2">
+            <div className="flex items-center gap-3">
+              <Switch
+                id="admin-only"
+                checked={adminOnly}
+                onCheckedChange={setAdminOnly}
+              />
+              <div>
+                <label htmlFor="admin-only" className="text-sm font-medium cursor-pointer">관리자 전용</label>
+                <p className="text-xs text-muted-foreground">활성화하면 일반 사용자에게 이 포스트가 표시되지 않습니다.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="featured"
+                checked={featured}
+                onCheckedChange={setFeatured}
+              />
+              <div>
+                <label htmlFor="featured" className="text-sm font-medium cursor-pointer">추천 포스트</label>
+                <p className="text-xs text-muted-foreground">활성화하면 홈 히어로 캐러셀에 추천 포스트로 노출됩니다.</p>
+              </div>
+            </div>
           </div>
         </div>
 

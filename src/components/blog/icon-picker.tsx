@@ -182,7 +182,6 @@ export const ICON_MAP: Record<string, IconType> = {
   Home: FcHome,
   Info: FcInfo,
   Inspection: FcInspection,
-  Library: FcLibrary,
   LineChart: FcLineChart,
   Linux: FcLinux,
   List: FcList,
@@ -282,7 +281,11 @@ export function IconPicker({
             {isCustom && value ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={customIconSrc(value)} alt={value} className="h-4 w-4 shrink-0" />
+                <img
+                  src={customIconSrc(value)}
+                  alt={value}
+                  className="h-4 w-4 shrink-0"
+                />
                 <span>{value.replace("custom:", "")}</span>
               </>
             ) : SelectedIcon ? (
@@ -360,7 +363,6 @@ export function IconPicker({
                 })}
               </CommandGroup>
             )}
-
           </CommandList>
         </Command>
       </PopoverContent>
