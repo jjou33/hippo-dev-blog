@@ -4,7 +4,6 @@ import { BlogPostContent } from "./blog-post-content";
 import { PostHeroSection } from "@/components/blog/hero-section";
 import { AdminEditButton } from "@/components/blog/admin-edit-button";
 import { AdminDeleteButton } from "@/components/blog/admin-delete-button";
-import { ViewCounter } from "@/components/blog/view-counter";
 import { getPostBySlug, getAllPosts, extractHeadings } from "@/lib/posts";
 import { BlogPostAside } from "@/components/blog/blog-post-aside";
 
@@ -73,7 +72,6 @@ export default async function BlogPostPage({
               {post.author && <span>{post.author}</span>}
               {post.author && post.date && <span>·</span>}
               {post.date && <time dateTime={post.date}>{post.date}</time>}
-              <ViewCounter slug={slug} />
               <AdminEditButton slug={slug} />
               <AdminDeleteButton slug={slug} />
             </div>
